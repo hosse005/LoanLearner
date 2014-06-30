@@ -1,0 +1,37 @@
+#!/usr/bin/python3
+import csv
+
+class InputReader:
+    '''
+    This class is responsible for reading the input resource
+    into the program.  Class holds raw data read from the resource, and
+    defers any further processing of data to futher classes.
+    '''
+
+    def __init__( self, fPath ):
+        ''' 
+        Constructor - arguments passed from main
+        @param fPath: relative location and name of input resource
+        '''
+        self.__inputFilePath = fPath
+        self.__rawData = [[]]
+        
+        # Attempt to access requested file
+        try:
+            self.__inputFile = open( self.__inputFilePath, 'r' )
+            self.__reader = csv.Reader( self.__inputFile, delimiter=',' )   
+        except FileNotFoundError:
+            print( "Couldn't open input file %s" % self.__inputFilePath )
+            return
+                                                        
+    def setFilePath( self, fPath ):
+        '''@param fPath: relative location and name of input resource'''
+        self.__inputFilePath = fPath
+
+    def readFile( self ):
+        for row in self.__reader:
+            for col in row:
+                self.__rawData[row].append( col )
+
+    def getRawData( self ):
+        return self.__rawData
