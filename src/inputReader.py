@@ -14,12 +14,12 @@ class InputReader:
         @param fPath: relative location and name of input resource
         '''
         self.__inputFilePath = fPath
-        self.__rawData = [[]]
+        self.__rawData = list()
         
         # Attempt to access requested file
         try:
             self.__inputFile = open( self.__inputFilePath, 'r' )
-            self.__reader = csv.Reader( self.__inputFile, delimiter=',' )   
+            self.__reader = csv.reader( self.__inputFile, delimiter=',' )   
         except FileNotFoundError:
             print( "Couldn't open input file %s" % self.__inputFilePath )
             return
@@ -30,8 +30,8 @@ class InputReader:
 
     def readFile( self ):
         for row in self.__reader:
-            for col in row:
-                self.__rawData[row].append( col )
+            self.__rawData.append( row )
+            print( self.__rawData )
 
     def getRawData( self ):
         return self.__rawData
