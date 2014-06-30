@@ -31,7 +31,13 @@ class InputReader:
     def readFile( self ):
         for row in self.__reader:
             self.__rawData.append( row )
-            print( self.__rawData )
 
     def getRawData( self ):
         return self.__rawData
+
+    def __del__( self ):
+        ''' Destructor - Close file connection '''
+        try:
+            self.__inputFile.close()
+        except:
+            pass
