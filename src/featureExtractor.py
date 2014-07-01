@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 import numpy as np
 import csv
 
@@ -18,31 +18,35 @@ class FeatureExtractor( metaclass=ABCMeta ):
         @param mInputReader: InputReader object for setting raw data
         '''
         # Attribute initialization
-        self.__rawData = list()
-        self.__features = list()
-        self.__trainingData = np.array()
+        self.rawData = list()
+        self.features = list()
 
         # Feature dump path
-        self.__outCSVPath = '../../res/featureDump.csv'
+        self.outCSVPath = '../../tmp/featureDump.csv'
         
         # Get raw data from the passed InputReader
-        self.__rawData = mInputReader.getRawData()
+        self.rawData = mInputReader.getRawData()
         
+        # Training data initialization
+        self.trainingData = np.array( np.empty_like( self.rawData ) )
+                
 
     def setOutCSVPath( self , fPath ):
         '''@param fPath: relative location and name of feature dump CSV'''
-        self.__outCSVPath = fPath
+        self.outCSVPath = fPath
 
 
-    @abstractmethod
     def getFeatures( self ):
-        ''' Derived classes should return extracted feature list'''
-        pass
+        return self.features
 
 
-    @abstractmethod
     def getTrainingData( self ):
-        ''' Derived classes should return extracted training data'''
+        return self.trainingData
+
+    
+    @abstractmethod
+    def extractFeatures( self ):
+        ''' This method is to be implemented by subclasses'''
         pass
 
 
@@ -52,14 +56,14 @@ class FeatureExtractor( metaclass=ABCMeta ):
         Note: This shouldn't be called w/o extracting features from a 
         derived class first.
         '''
-        mDumpFile = open( self.__outCSVPath, 'w', newline='' )
+        mDumpFile = open( self.outCSVPath, 'w', newline='' )
         mCSVWriter = csv.writer( mDumpFile, delimiter=',' )
         
         # First write the features to the first row of the dump file
-        mCSVWriter.writeline( self.__features )
+        mCSVWriter.writerow( self.features )
 
         # Then, dump all training data writing by row/record
-        mCSVWriter.writerows( self.__trainingData )
+        mCSVWriter.writerows( self.trainingData )
 
         # Release file i/o
         mDumpFile.close()
