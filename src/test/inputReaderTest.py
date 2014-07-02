@@ -19,7 +19,7 @@ class InputReaderTest(unittest.TestCase):
         self.mInputReader.readFile()
         mRawData = self.mInputReader.getRawData()
         self.assertEqual( mRawData, [['InputReader', 'Test', 'CSV'],
-                                    ['Alex', 'Brian', 'Craig'],
+                                    ['1', '44', '-4.3'],
                                      ['234', '-45', '0.45']] )
 
     def test_pathSet( self ):

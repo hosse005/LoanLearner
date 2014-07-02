@@ -27,7 +27,7 @@ class DummyFeatureExtractorImpl( FeatureExtractor ):
                         ['34.', '79.2', '0.3342'],
                         ['0.34', '32', '994.3']]
         self.features = self.rawData[0]
-        self.trainingData = self.rawData[1:]
+        self.trainingData = np.array( self.rawData[1:] )
 
     def __del__( self ):
         pass
@@ -54,12 +54,15 @@ class FeatureExtractorTest( unittest.TestCase ):
 
     def test_getTrainingData( self ):
         '''Test getTrainingData() function returns correct data'''
-        self.assertEqual( self.mFeatureExtractor.getTrainingData(),
-                          self.mFeatureExtractor.rawData[1:]
-                        )
-        # Assert that returned data is of type numpy.array
-        self.assertTrue( type( self.mFeatureExtractor.getTrainingData() is
-                               np.array ) )
+
+        # Assert that returned data is of type numpy.ndarray
+        self.assertTrue( isinstance( self.mFeatureExtractor.getTrainingData(),
+                         np.ndarray ) )
+
+        # Assert that returned data value and size are correct
+        np.testing.assert_array_equal( self.mFeatureExtractor.getTrainingData(),
+                                       np.array(
+                                        self.mFeatureExtractor.rawData[1:] ) )
     
     def test_dumpToCSV( self ):
         '''Test debug dump and path set'''
@@ -76,6 +79,11 @@ class FeatureExtractorTest( unittest.TestCase ):
                 dumpRead.append( row )
             self.assertTrue( dumpRead, self.mFeatureExtractor.rawData )
             csvfile.close()
+
+    def test_listIdx( self ):
+        '''Test list index returns correct feature index'''
+        for i,v in enumerate( self.mFeatureExtractor.features ):
+            self.assertEqual( i, self.mFeatureExtractor.listIdx( v ) )
 
 if __name__ == '__main__':
     unittest.main()

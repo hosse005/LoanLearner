@@ -17,19 +17,17 @@ class FeatureExtractor( metaclass=ABCMeta ):
         Constructor - arguments passed from main
         @param mInputReader: InputReader object for setting raw data
         '''
-        # Attribute initialization
-        self.rawData = list()
-        self.features = list()
-
         # Feature dump path
         self.outCSVPath = '../../tmp/featureDump.csv'
         
         # Get raw data from the passed InputReader
+        mInputReader.readFile()
         self.rawData = mInputReader.getRawData()
-        
-        # Training data initialization
-        self.trainingData = np.array( np.empty_like( self.rawData ) )
-                
+
+        # Initialize feature set and training data from raw data
+        self.features = self.rawData[0]
+        self.trainingData = np.array( self.rawData[1:] )
+
 
     def setOutCSVPath( self , fPath ):
         '''@param fPath: relative location and name of feature dump CSV'''
@@ -42,6 +40,15 @@ class FeatureExtractor( metaclass=ABCMeta ):
 
     def getTrainingData( self ):
         return self.trainingData
+
+
+    def listIdx( self, feature ):
+        '''
+        Return the list index of a given feature
+        @param feature: training feature
+        @return index: index of passed feature
+        '''
+        return self.features.index( feature )
 
     
     @abstractmethod
@@ -70,5 +77,5 @@ class FeatureExtractor( metaclass=ABCMeta ):
 
 
     def __del__( self ):
-        ''' Destructor - No cleanup needed yet..'''
+        '''No Destructor implementation'''
         pass
