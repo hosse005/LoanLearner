@@ -55,10 +55,18 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         idx = self.listIdx( 'term' )
         
         # Check expression and convert appropriately
-        if re.search( r'36', training_sample[idx] ):
+        if re.search( '36', training_sample[idx] ):
             return 36
         else:
             return 60
+
+    def intRateConversion( self, training_sample ):
+        '''Remove '%' from raw data'''
+        
+        # Get index of interest rate feature
+        idx = self.listIdx( 'int_rate' )
+
+        return float( re.sub( '%', '', training_sample[idx] ) )
 
     def extractFeatures( self ):
         '''Convert training data to format suitable for learning where needed'''

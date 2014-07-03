@@ -33,12 +33,23 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
         # Loop over all test data and assert proper enumeration
         for row in self.mFeatureExtractor.getTrainingData():
             termE = self.mFeatureExtractor.termEnumerator( row )
-            if re.search( r'36 months', row[idx] ):
+            if re.search( '36 months', row[idx] ):
                 self.assertEqual( 36, termE )
-            elif re.search( r'60 months', row[idx] ):
+            elif re.search( '60 months', row[idx] ):
                 self.assertEqual( 60, termE )
             else:
                 raise ValueError( 'Encountered unsupported term value' )
+
+    def test_intRateConversion( self ):
+        '''Test interest rate '%' removal'''
+        
+        # Grab appropriate column index
+        idx = self.mFeatureExtractor.listIdx( 'int_rate' )
+
+        # Loop over all test data and assert proper conversion
+        for row in self.mFeatureExtractor.getTrainingData():
+            int_rate = self.mFeatureExtractor.intRateConversion( row )
+            self.assertFalse( re.search( '%', str( int_rate ) ) )
 
 
 if __name__ == '__main__':
