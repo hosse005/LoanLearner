@@ -68,6 +68,34 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
 
         return float( re.sub( '%', '', training_sample[idx] ) )
 
+    def loanGradeHash( self, training_sample ):
+        '''Hash A1-G5 subgrade ratings to 1 - 35'''
+        
+        # Get index of loan subgrade feature
+        idx = self.listIdx( 'sub_grade' )
+
+        # Search for all possible letter and number grades and modify tmp
+        tmp = 0
+        mLetterDict = {'A': 0, 'B': 5, 'C': 10, 'D': 15, 
+                       'E': 20, 'F': 25, 'G': 30}
+        
+        match = re.search( '[ABCDEFG]', training_sample[idx] )
+        if match:
+            key = match.group()
+            tmp = mLetterDict[key]
+        else:
+            raise ValueError( 'Unexpected value read from sub_grade @ training \
+            sample %d' % idx )
+
+        match = re.search( '[12345]', training_sample[idx] )
+        if match:
+            tmp += int( match.group() )
+        else:
+            raise ValueError( 'Unexpected value read from sub_grade @ training \
+            sample %d' % idx )
+
+        return tmp
+        
     def extractFeatures( self ):
         '''Convert training data to format suitable for learning where needed'''
 
