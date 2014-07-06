@@ -69,6 +69,29 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
             testKey = row[idx]
             self.assertEqual( mTestDict[testKey], sub_grade_hash )
 
+    def test_empLengthConversion( self ):
+        '''Test employment length function'''
+
+        # Grab appropriate column index
+        idx = self.mFeatureExtractor.listIdx( 'emp_length' )
+        
+        # Loop over all test data and assert correct conversion is returned
+        for row in self.mFeatureExtractor.getTrainingData():
+            emp_length = self.mFeatureExtractor.empLengthConversion( row )
+            
+            # Convert function calculated text back to expected string
+            if emp_length is 0.1:
+                emp_length = '<'
+            elif emp_length is 20:
+                emp_length = '10'
+            elif emp_length is 0:
+                emp_length = 'n/a'
+            else:
+                emp_length = str( emp_length )
+            
+            # Use converted emp_length for reg exp test against test resource
+            self.assertTrue( re.search( emp_length, row[idx] ) )
+
 
 if __name__ == '__main__':
     unittest.main()

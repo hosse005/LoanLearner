@@ -79,6 +79,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         mLetterDict = {'A': 0, 'B': 5, 'C': 10, 'D': 15, 
                        'E': 20, 'F': 25, 'G': 30}
         
+        # Search by letter grade first
         match = re.search( '[ABCDEFG]', training_sample[idx] )
         if match:
             key = match.group()
@@ -87,6 +88,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
             raise ValueError( 'Unexpected value read from sub_grade @ training \
             sample %d' % idx )
 
+        # Add number subgrade to base letter grade dict value
         match = re.search( '[12345]', training_sample[idx] )
         if match:
             tmp += int( match.group() )
@@ -95,6 +97,32 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
             sample %d' % idx )
 
         return tmp
+
+    def empLengthConversion( self, training_sample ):
+
+        # Get index of employment length feature
+        idx = self.listIdx( 'emp_length' )
+
+        # Search for number of years
+        match = re.findall( '[<\+n123456789]', training_sample[idx] )
+        
+        if match:
+            # Take the last match for '10+' differentiation from '1'
+            tmp = match[-1]
+
+            # Assign 0.1 to '< 1 year' and 20 to '10+ years' to accentuate
+            if tmp is '<':
+                return 0.1
+            elif tmp is '+':
+                return 20
+            elif tmp is 'n':
+                return 0
+            else:
+                return int( tmp )
+        else:
+            raise ValueError( 'Unexpected value read from emp_length @ training\
+            sample %d' % idx )
+        
         
     def extractFeatures( self ):
         '''Convert training data to format suitable for learning where needed'''
