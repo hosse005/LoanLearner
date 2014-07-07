@@ -99,26 +99,37 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
         idx = self.mFeatureExtractor.listIdx( 'home_ownership' )
 
         # Test dictionary
-        mTestDict = {'RENT': 1, 'MORTGAGE': 2, 'OWN': 3, 'OTHER': 4}
+        mTestDict = {1: 'RENT', 2: 'MORTGAGE', 3: 'OWN', 4: 'OTHER'}
         
         # Loop over all test data and assert correct enumeration is returned
         for row in self.mFeatureExtractor.getTrainingData():
             homeOwnE = self.mFeatureExtractor.homeOwnershipEnumerator( row )
 
             # Convert function result back to expected string
-            if homeOwnE == 1:
-                homeOwn = 'RENT'
-            elif homeOwnE == 2:
-                homeOwn = 'MORTGAGE'
-            elif homeOwnE == 3:
-                homeOwn = 'OWN'
-            elif homeOwnE == 4:
-                homeOwn = 'OTHER'
+            if homeOwnE == 1 or 2 or 3 or 4:
+                homeOwn = mTestDict[homeOwnE]
             else:
                 homeOwn = 'FAIL'
             
             # Use converted homeOwn for reg exp test against test resource
             self.assertTrue( re.search( homeOwn, row[idx] ) )
+
+    def test_incomeVerifiedConversion( self ):
+        '''Test income verification conversion'''
+
+        # Grab appropriate column index
+        idx = self.mFeatureExtractor.listIdx( 'is_inc_v' )
+
+        # Loop over all test data and assert correct conversion is returned
+        for row in self.mFeatureExtractor.getTrainingData():
+            is_inc_v = self.mFeatureExtractor.incomeVerifiedConversion( row )
+         
+            # Assert that when is_inc_v is 0, input contains 'Not' string
+            if is_inc_v == 0:
+                self.assertTrue( re.search( 'Not', row[idx] ) )
+            else:
+                self.assertFalse( re.search( 'Not', row[idx] ) )
+        
 
 
 if __name__ == '__main__':

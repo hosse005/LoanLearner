@@ -151,6 +151,20 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
             raise ValueError( 'Unexpected value read from home_ownership @ \
             training sample %d' % idx )
         
+    def incomeVerifiedConversion( self, training_sample ):
+        '''Convert income verification status to binary value'''
+
+        # Get index of income verification feature
+        idx = self.listIdx( 'is_inc_v' )
+
+        # Search for 'not', indicating source not verified
+        match = re.search( 'Not', training_sample[idx] )
+
+        if match:
+            return 0
+        else:
+            return 1
+
         
     def extractFeatures( self ):
         '''Convert training data to format suitable for learning where needed'''
