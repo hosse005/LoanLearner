@@ -99,6 +99,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         return tmp
 
     def empLengthConversion( self, training_sample ):
+        ''' Convert employment length to suitable integer value'''
 
         # Get index of employment length feature
         idx = self.listIdx( 'emp_length' )
@@ -111,17 +112,44 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
             tmp = match[-1]
 
             # Assign 0.1 to '< 1 year' and 20 to '10+ years' to accentuate
-            if tmp is '<':
+            if tmp == '<':
                 return 0.1
-            elif tmp is '+':
+            elif tmp == '+':
                 return 20
-            elif tmp is 'n':
+            elif tmp == 'n':
                 return 0
             else:
                 return int( tmp )
         else:
             raise ValueError( 'Unexpected value read from emp_length @ training\
             sample %d' % idx )
+        
+    def homeOwnershipEnumerator( self, training_sample ):
+        '''Enumerate home ownership statuses'''
+
+        # Get index of home ownership feature
+        idx = self.listIdx( 'home_ownership' )
+
+        # Search for expected values
+        match = re.search( 'RENT|OWN|MORTGAGE|OTHER', training_sample[idx] )
+
+        if match:
+            tmp = match.group()
+
+            # Assign integers to the possible statuses
+            if tmp == 'RENT':
+                return 1
+            elif tmp == 'MORTGAGE':
+                return 2
+            elif tmp == 'OWN':
+                return 3
+            elif tmp == 'OTHER':
+                return 4
+            else:
+                return 0
+        else:
+            raise ValueError( 'Unexpected value read from home_ownership @ \
+            training sample %d' % idx )
         
         
     def extractFeatures( self ):

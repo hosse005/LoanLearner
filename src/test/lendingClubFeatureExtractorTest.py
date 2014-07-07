@@ -80,17 +80,45 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
             emp_length = self.mFeatureExtractor.empLengthConversion( row )
             
             # Convert function calculated text back to expected string
-            if emp_length is 0.1:
+            if emp_length == 0.1:
                 emp_length = '<'
-            elif emp_length is 20:
+            elif emp_length == 20:
                 emp_length = '10'
-            elif emp_length is 0:
+            elif emp_length == 0:
                 emp_length = 'n/a'
             else:
                 emp_length = str( emp_length )
             
             # Use converted emp_length for reg exp test against test resource
             self.assertTrue( re.search( emp_length, row[idx] ) )
+
+    def test_homeOwnershipEnumerator( self ):
+        '''Test home ownership enumeration'''
+
+        # Grab appropriate column index
+        idx = self.mFeatureExtractor.listIdx( 'home_ownership' )
+
+        # Test dictionary
+        mTestDict = {'RENT': 1, 'MORTGAGE': 2, 'OWN': 3, 'OTHER': 4}
+        
+        # Loop over all test data and assert correct enumeration is returned
+        for row in self.mFeatureExtractor.getTrainingData():
+            homeOwnE = self.mFeatureExtractor.homeOwnershipEnumerator( row )
+
+            # Convert function result back to expected string
+            if homeOwnE == 1:
+                homeOwn = 'RENT'
+            elif homeOwnE == 2:
+                homeOwn = 'MORTGAGE'
+            elif homeOwnE == 3:
+                homeOwn = 'OWN'
+            elif homeOwnE == 4:
+                homeOwn = 'OTHER'
+            else:
+                homeOwn = 'FAIL'
+            
+            # Use converted homeOwn for reg exp test against test resource
+            self.assertTrue( re.search( homeOwn, row[idx] ) )
 
 
 if __name__ == '__main__':
