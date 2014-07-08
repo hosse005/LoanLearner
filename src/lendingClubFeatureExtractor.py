@@ -7,6 +7,7 @@ from featureExtractor import FeatureExtractor
 import numpy as np
 import csv
 import re
+from datetime import datetime
 
 class LendingClubFeatureExtractor( FeatureExtractor ):
     ''' Dummy Feature Extractor class used for unit test of the base class'''
@@ -48,6 +49,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
                                   'purpose', 'addr_state', 'bc_util', 
                                   'earliest_cr_line', 'revol_util'}
 
+
     def termEnumerator( self, training_sample ):
         '''Enumerate loan term duration'''
         
@@ -60,6 +62,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         else:
             return 60
 
+
     def intRateConversion( self, training_sample ):
         '''Remove '%' from raw data'''
         
@@ -67,6 +70,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         idx = self.listIdx( 'int_rate' )
 
         return float( re.sub( '%', '', training_sample[idx] ) )
+
 
     def loanGradeHash( self, training_sample ):
         '''Hash A1-G5 subgrade ratings to 1 - 35'''
@@ -98,6 +102,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
 
         return tmp
 
+
     def empLengthConversion( self, training_sample ):
         ''' Convert employment length to suitable integer value'''
 
@@ -123,6 +128,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         else:
             raise ValueError( 'Unexpected value read from emp_length @ training\
             sample %d' % idx )
+
         
     def homeOwnershipEnumerator( self, training_sample ):
         '''Enumerate home ownership statuses'''
@@ -150,6 +156,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         else:
             raise ValueError( 'Unexpected value read from home_ownership @ \
             training sample %d' % idx )
+
         
     def incomeVerifiedConversion( self, training_sample ):
         '''Convert income verification status to binary value'''
@@ -164,6 +171,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
             return 0
         else:
             return 1
+
 
     def purposeEnumerator( self, training_sample ):
         '''Enumerate loan purpose features'''
@@ -192,6 +200,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         else:
             return int(len(purposeDict) / 2) + 1
 
+
     def stateEnumerator( self, training_sample ):
         '''Enumerate state feature'''
 
@@ -214,7 +223,28 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
 
         return stateDict[training_sample[idx]]
         
+
+    def earlyCrLineConversion( self, training_sample ):
+        '''Earliest line of credit conversion, w/ respect to system epoch'''
+
+        # Get index of income verification feature
+        idx = self.listIdx( 'earliest_cr_line' )
         
+        # Convert the date to a datetime object
+        try:
+            earlyCrLine = datetime.strptime( training_sample[idx],
+                                             "%m/%d/%Y  %H:%M:%S" )
+        except ValueError as e:
+            print( "Incorrect date format read from input file!" )
+            print( "Error: %s" % e )
+            return 0
+
+        # Convert datetime object to float seconds since epoch
+        earlyCrLine -= datetime(1970, 1, 1)
+
+        return earlyCrLine.total_seconds()
+
+     
     def extractFeatures( self ):
         '''Convert training data to format suitable for learning where needed'''
 

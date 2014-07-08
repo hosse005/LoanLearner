@@ -24,6 +24,7 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
         self.mFeatureExtractor = LendingClubFeatureExtractor( 
             self.mInputReader )
 
+
     def test_termEnumerator( self ):
         '''Test termEnumerator functionality'''
         
@@ -40,6 +41,7 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
             else:
                 raise ValueError( 'Encountered unsupported term value' )
 
+
     def test_intRateConversion( self ):
         '''Test interest rate '%' removal'''
         
@@ -47,6 +49,7 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
         for row in self.mFeatureExtractor.getTrainingData():
             int_rate = self.mFeatureExtractor.intRateConversion( row )
             self.assertFalse( re.search( '%', str( int_rate ) ) )
+
 
     def test_loanGradeHash( self ):
         '''Test loan grade hashing function'''
@@ -68,6 +71,7 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
             sub_grade_hash = self.mFeatureExtractor.loanGradeHash( row )
             testKey = row[idx]
             self.assertEqual( mTestDict[testKey], sub_grade_hash )
+
 
     def test_empLengthConversion( self ):
         '''Test employment length function'''
@@ -92,6 +96,7 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
             # Use converted emp_length for reg exp test against test resource
             self.assertTrue( re.search( emp_length, row[idx] ) )
 
+
     def test_homeOwnershipEnumerator( self ):
         '''Test home ownership enumeration'''
 
@@ -114,6 +119,7 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
             # Use converted homeOwn for reg exp test against test resource
             self.assertTrue( re.search( homeOwn, row[idx] ) )
 
+
     def test_incomeVerifiedConversion( self ):
         '''Test income verification conversion'''
 
@@ -129,6 +135,7 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
                 self.assertTrue( re.search( 'Not', row[idx] ) )
             else:
                 self.assertFalse( re.search( 'Not', row[idx] ) )
+
         
     def test_purposeEnumerator( self ):
         '''Test loan purpose enumeration'''
@@ -151,6 +158,7 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
                 self.assertEqual( mTestDict[purpose],
                                   re.search( mTestDict[purpose], row[idx] )
                                   .group() )
+
 
     def test_stateEnumerator( self ):
         '''Test state enumeration'''
@@ -177,6 +185,26 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
 
             # Assert returned value matches w/ test dictionary
             self.assertTrue( re.search( mTestDict[addr_stateE], row[idx] ) )
+
+
+    def test_earlyCrLineConversion( self ):
+        '''Test date conversion'''
+
+        # Grab appropriate column index
+        idx = self.mFeatureExtractor.listIdx( 'earliest_cr_line' )
+
+        # Generate a test date - testDelta time elapsed since epoch
+        testDate = ['01/01/1972  01:50:01']
+        testDelta = 63078601.0
+
+        # Push null entries into testDate to simulate feature placement in 
+        # the training set
+        for i in range(idx):
+            testDate.insert(0,'')
+        
+        # Assert time elapsed since epoch is correct for given test time
+        self.assertEqual( testDelta, self.mFeatureExtractor.
+                          earlyCrLineConversion( testDate ) )
 
 
 if __name__ == '__main__':
