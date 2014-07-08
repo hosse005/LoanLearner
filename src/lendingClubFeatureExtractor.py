@@ -192,6 +192,28 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         else:
             return int(len(purposeDict) / 2) + 1
 
+    def stateEnumerator( self, training_sample ):
+        '''Enumerate state feature'''
+
+        # Get index of income verification feature
+        idx = self.listIdx( 'addr_state' )
+
+        # Create an enum dictionary - TODO: need to determine importance of
+        # assigned value to learning algorithm performance
+        stateDict = {'AK': 1,  'AL': 2,  'AR': 3,  'AZ': 4,  'CA': 5,  
+                     'CO': 6,  'CT': 7,  'DC': 8,  'DE': 9,  'FL': 10, 
+                     'GA': 11, 'HI': 12, 'IA': 13, 'ID': 14, 'IL': 15,
+                     'IN': 16, 'KS': 17, 'KY': 18, 'LA': 19, 'MA': 20,
+                     'MD': 21, 'ME': 22, 'MI': 23, 'MN': 24, 'MO': 25,
+                     'MS': 26, 'MT': 27, 'NC': 28, 'ND': 29, 'NE': 30,
+                     'NH': 31, 'NJ': 32, 'NM': 33, 'NV': 34, 'NY': 35,
+                     'OH': 36, 'OK': 37, 'OR': 38, 'PA': 39, 'PR': 40,
+                     'RI': 41, 'SC': 42, 'SD': 43, 'TN': 44, 'TX': 45,
+                     'UT': 46, 'VA': 47, 'VI': 48, 'VT': 49, 'WA': 50,
+                     'WI': 51, 'WV': 52, 'WY': 53}
+
+        return stateDict[training_sample[idx]]
+        
         
     def extractFeatures( self ):
         '''Convert training data to format suitable for learning where needed'''
