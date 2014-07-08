@@ -130,7 +130,26 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
             else:
                 self.assertFalse( re.search( 'Not', row[idx] ) )
         
+    def test_purposeEnumerator( self ):
+        '''Test loan purpose enumeration'''
 
+        # Grab appropriate column index
+        idx = self.mFeatureExtractor.listIdx( 'purpose' )
+
+        # Test dictionary - This must align with UUT dict!!
+        mTestDict = {1: 'house', 2: 'home_improvement', 3: 'medical',
+                     4: 'education', 5: 'debt_consolidation',
+                     7: 'small_business', 8: 'major_purchase', 9: 'car', 
+                     10: 'credit_card', 11: 'wedding', 12: 'vacation'}
+
+        # Loop over all test data and assert correct conversion is returned
+        for row in self.mFeatureExtractor.getTrainingData():
+            purpose = self.mFeatureExtractor.purposeEnumerator( row )
+
+            # Assert string is found in test data based on returned enum
+            if purpose in mTestDict.keys():
+                self.assertEqual( mTestDict[purpose],
+                             re.search( mTestDict[purpose], row[idx] ).group() )
 
 if __name__ == '__main__':
     unittest.main()

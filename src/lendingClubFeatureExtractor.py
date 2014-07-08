@@ -165,6 +165,33 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         else:
             return 1
 
+    def purposeEnumerator( self, training_sample ):
+        '''Enumerate loan purpose features'''
+
+        # Get index of income verification feature
+        idx = self.listIdx( 'purpose' )
+
+        # Create an enumeration dictionary, try to enum from most to least
+        # credible and leave slot for others in the middle
+        purposeDict = {'car': 9, 'credit_card': 10, 'debt_consolidation': 5, 
+                       'education': 4, 'home_improvement': 2, 'house': 1,
+                       'major_purchase': 8, 'medical': 3,
+                       'small_business': 7, 'vacation': 12, 'wedding': 11}
+        
+        # Search for expected values
+        regex = '|'.join( ['car', 'credit_card', 'debt_consolidation',
+                           'education', 'home_improvement', 'house', 
+                           'major_purchase', 'medical', 'small_business',
+                           'vacation', 'wedding'] )
+
+        match = re.search( regex, training_sample[idx] )
+
+        if match:
+            purpose = match.group()
+            return purposeDict[purpose]
+        else:
+            return int(len(purposeDict) / 2) + 1
+
         
     def extractFeatures( self ):
         '''Convert training data to format suitable for learning where needed'''
