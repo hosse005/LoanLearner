@@ -63,11 +63,11 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
             return 60
 
 
-    def intRateConversion( self, training_sample ):
+    def pcntRemove( self, training_sample, feature ):
         '''Remove '%' from raw data'''
         
-        # Get index of interest rate feature
-        idx = self.listIdx( 'int_rate' )
+        # Get index of passed feature
+        idx = self.listIdx( feature )
 
         return float( re.sub( '%', '', training_sample[idx] ) )
 
@@ -244,7 +244,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
 
         return earlyCrLine.total_seconds()
 
-     
+
     def extractFeatures( self ):
         '''Convert training data to format suitable for learning where needed'''
 

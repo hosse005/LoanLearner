@@ -42,13 +42,17 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
                 raise ValueError( 'Encountered unsupported term value' )
 
 
-    def test_intRateConversion( self ):
-        '''Test interest rate '%' removal'''
+    def test_pcntRemove( self ):
+        '''Test '%' removal'''
         
         # Loop over all test data and assert proper conversion
         for row in self.mFeatureExtractor.getTrainingData():
-            int_rate = self.mFeatureExtractor.intRateConversion( row )
+            int_rate = self.mFeatureExtractor.pcntRemove( row, 'int_rate' )
+            revol_util = self.mFeatureExtractor.pcntRemove( row, 'revol_util' )
+
+            # Assert that no '%' contained in the results
             self.assertFalse( re.search( '%', str( int_rate ) ) )
+            self.assertFalse( re.search( '%', str( revol_util ) ) )
 
 
     def test_loanGradeHash( self ):
