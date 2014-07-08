@@ -245,6 +245,14 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         return earlyCrLine.total_seconds()
 
 
+    def statusConversion( self, training_sample ):
+        '''
+        Assign 'Charged Off' to 0, and 'Fully Paid' to 1 for classification
+        Remove any other features from the training set which don't have
+        one of these two statuses
+        '''
+
+
     def extractFeatures( self ):
         '''Convert training data to format suitable for learning where needed'''
 
