@@ -227,7 +227,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
     def earlyCrLineConversion( self, training_sample ):
         '''Earliest line of credit conversion, w/ respect to system epoch'''
 
-        # Get index of income verification feature
+        # Get index of earliest credit line feature
         idx = self.listIdx( 'earliest_cr_line' )
         
         # Convert the date to a datetime object
@@ -249,8 +249,27 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         '''
         Assign 'Charged Off' to 0, and 'Fully Paid' to 1 for classification
         Remove any other features from the training set which don't have
-        one of these two statuses
+        one of these two statuses; Client code needs to check for not
+        defined status before use
+        @return status: 0 = charged off, 1 = fully paid, 2 = not defined
         '''
+
+        # Get index of loan status feature
+        idx = self.listIdx( 'loan_status' )
+
+        # Search for desired status values - TODO: possibly add late statuses to
+        # negative classification as well
+        match = re.search( 'Charged Off|Fully Paid', training_sample[idx] )
+
+        # If we have a match, return conversion, otherwise remove the sample
+        if match:
+            match = match.group()
+            if match == 'Charged Off':
+                return 0
+            else:
+                return 1
+        else:
+            return 2
 
 
     def extractFeatures( self ):

@@ -15,3 +15,4 @@ loan_amnt,funded_amnt,term,int_rate,installment,sub_grade,emp_length,home_owners
 7500,7500, 36 months,6.03%,228.27,A1,3 years,RENT,52000,Not Verified,Charged Off,renewable_energy,NV,0,,,,18.51,0,0,7/8/1984 11:20,0,,,,,8,0,,22426,65.70%,,21,0,6/11/2013,228.27,null,11/12/2013,,,0,,0,0,,,,,,,,,,,,,,
 3600,3600, 36 months,6.03%,109.57,A1,10+ years,MORTGAGE,46800,Not Verified,Fully Paid,vacation,CA,0,,,,11.28,0,0,6/13/1998 12:46,0,,,,,7,0,,19078,44.10%,,12,0,8/28/2013,1893.37,null,9/23/2013,,,0,,0,0,,,,,,,,,,,,,,
 4000,4000, 36 months,12.69%,134.18,B5,10+ years,MORTGAGE,66000,Not Verified,Charged Off,wedding,NJ,0,,,,21.09,0,0,10/28/1998 10:39,2,,,,,11,0,,10054,38.50%,,29,0,8/7/2012,134.18,null,11/26/2012,,,0,,0,0,,,,,,,,,,,,,,
+25000,25000, 60 months,18.64%,643.58,E1,10+ years,RENT,60000,Source Verified,Current,debt_consolidation,CA,0,,,,20.48,0,0,1/23/1999 12:52,0,,,,,6,0,,10887,90.70%,,8,0,6/4/2012,643.58,null,9/26/2012,,,0,,0,0,,,,,,,,,,,,,,

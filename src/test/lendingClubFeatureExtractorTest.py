@@ -210,6 +210,24 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
         self.assertEqual( testDelta, self.mFeatureExtractor.
                           earlyCrLineConversion( testDate ) )
 
+    def test_statusConversion( self ):
+        '''Loan status conversion test'''
+
+        # Grab appropriate column index
+        idx = self.mFeatureExtractor.listIdx( 'loan_status' )
+
+        # Loop over all test data and assert correct conversion is returned
+        for row in self.mFeatureExtractor.getTrainingData():
+            loan_status = self.mFeatureExtractor.statusConversion( row )
+
+            # Assert that correct loan_status is returned based on test input
+            if loan_status == 0:
+                self.assertTrue( re.search( 'Charged Off', row[idx] ) )
+            elif loan_status == 1:
+                self.assertTrue( re.search( 'Fully Paid', row[idx] ) )
+            else:
+                self.assertFalse( re.search( 'Fully Paid|Charged Off', 
+                                             row[idx] ) )
 
 if __name__ == '__main__':
     unittest.main()
