@@ -50,7 +50,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
                                   'earliest_cr_line', 'revol_util'}
 
 
-    def termEnumerator( self, training_sample ):
+    def termConversion( self, training_sample ):
         '''Enumerate loan term duration'''
         
         # Get index of loan term feature
@@ -91,6 +91,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         else:
             raise ValueError( 'Unexpected value read from sub_grade @ training \
             sample %d' % idx )
+            return
 
         # Add number subgrade to base letter grade dict value
         match = re.search( '[12345]', training_sample[idx] )
@@ -99,6 +100,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         else:
             raise ValueError( 'Unexpected value read from sub_grade @ training \
             sample %d' % idx )
+            return
 
         return tmp
 
@@ -128,6 +130,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         else:
             raise ValueError( 'Unexpected value read from emp_length @ training\
             sample %d' % idx )
+            return
 
         
     def homeOwnershipEnumerator( self, training_sample ):
@@ -156,6 +159,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         else:
             raise ValueError( 'Unexpected value read from home_ownership @ \
             training sample %d' % idx )
+            return
 
         
     def incomeVerifiedConversion( self, training_sample ):
@@ -233,10 +237,10 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         # Convert the date to a datetime object
         try:
             earlyCrLine = datetime.strptime( training_sample[idx],
-                                             "%m/%d/%Y  %H:%M:%S" )
-        except ValueError as e:
+                                             "%m/%d/%Y  %H:%M" )
+        except ValueError as ve:
             print( "Incorrect date format read from input file!" )
-            print( "Error: %s" % e )
+            print( "Error: %s" % ve )
             return 0
 
         # Convert datetime object to float seconds since epoch
@@ -274,6 +278,85 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
 
     def extractFeatures( self ):
         '''Convert training data to format suitable for learning where needed'''
+        
+        # Create a dirt list for removing samples
+        mDirtList = list()
+
+        # Loop through all training samples and run conversions - TODO: this
+        # could/should have a parallel implementation for performance
+        for i, training_sample in enumerate( self.trainingData ):
+            
+            # First digitize output and remove unclassified samples
+            idx = self.listIdx( 'loan_status' )
+            loanStatus = self.statusConversion( training_sample )
+            if loanStatus == 0 or 1:
+                training_sample[idx] = self.statusConversion( training_sample )
+            else:
+                # Mark dirty sample and increment rmv cnt
+                mDirtList.append( i )
+                self.nRmvSamples += 1
+                continue
+
+            # If we have a valid sample, run through all conversions and update
+            # trainingData
+
+            # Loan term conversion
+            idx = self.listIdx( 'term' )
+            training_sample[idx] = self.termConversion( training_sample )
+            
+            # Loan interest rate conversion
+            idx = self.listIdx( 'int_rate' )
+            training_sample[idx] = self.pcntRemove( training_sample, 
+                                                    'int_rate' )
+
+            # Revolving utility conversion
+            idx = self.listIdx( 'revol_util' )
+            training_sample[idx] = self.pcntRemove( training_sample, 
+                                                    'revol_util' )
+
+            # Loan grade hash
+            idx = self.listIdx( 'sub_grade' )
+            training_sample[idx] = self.loanGradeHash( training_sample )
+
+            # Employment length conversion
+            idx = self.listIdx( 'emp_length' )
+            training_sample[idx] = self.empLengthConversion( training_sample )
+            
+            # Home ownership enumeration
+            idx = self.listIdx( 'home_ownership' )
+            training_sample[idx] = self.homeOwnershipEnumerator( 
+                training_sample )
+
+            # Income verification conversion
+            idx = self.listIdx( 'is_inc_v' )
+            training_sample[idx] = self.incomeVerifiedConversion(
+                training_sample )
+
+            # Loan purpose enumeration
+            idx = self.listIdx( 'purpose' )
+            training_sample[idx] = self.purposeEnumerator( training_sample )
+
+            # State enumeration
+            idx = self.listIdx( 'addr_state' )
+            training_sample[idx] = self.stateEnumerator( training_sample )
+
+            # Earliest credit line conversion
+            idx = self.listIdx( 'earliest_cr_line' )
+            training_sample[idx] = self.earlyCrLineConversion( training_sample )
+
+            # Finally, convert all training data to float type
+            # Remove the sample if it throws an exception
+            try:
+                training_sample  = np.asfarray( training_sample )
+            except ValueError as ve:
+                # Mark dirty sample and increment rmv cnt
+                mDirtList.append( i )
+                self.nRmvSamples += 1
+
+        # Remove all marked dirty samples
+        self.trainingData = np.delete( self.trainingData, mDirtList, 0 )
 
     def __del__( self ):
         pass
+
+

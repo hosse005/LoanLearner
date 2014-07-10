@@ -25,7 +25,7 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
             self.mInputReader )
 
 
-    def test_termEnumerator( self ):
+    def test_termConversion( self ):
         '''Test termEnumerator functionality'''
         
         # Grab appropriate column index
@@ -33,11 +33,11 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
         
         # Loop over all test data and assert proper enumeration
         for row in self.mFeatureExtractor.getTrainingData():
-            termE = self.mFeatureExtractor.termEnumerator( row )
+            term = self.mFeatureExtractor.termConversion( row )
             if re.search( '36 months', row[idx] ):
-                self.assertEqual( 36, termE )
+                self.assertEqual( 36, term )
             elif re.search( '60 months', row[idx] ):
-                self.assertEqual( 60, termE )
+                self.assertEqual( 60, term )
             else:
                 raise ValueError( 'Encountered unsupported term value' )
 
@@ -198,8 +198,8 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
         idx = self.mFeatureExtractor.listIdx( 'earliest_cr_line' )
 
         # Generate a test date - testDelta time elapsed since epoch
-        testDate = ['01/01/1972  01:50:01']
-        testDelta = 63078601.0
+        testDate = ['01/01/1972  01:50']
+        testDelta = 63078600.0
 
         # Push null entries into testDate to simulate feature placement in 
         # the training set
@@ -228,6 +228,26 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
             else:
                 self.assertFalse( re.search( 'Fully Paid|Charged Off', 
                                              row[idx] ) )
+
+    def test_extractFeatures( self ):
+        '''Feature extraction test'''
+
+        # First, test training sample removal functionality
+        # Get initial training sample count
+        nSamples = self.mFeatureExtractor.getSampleCnt()
+
+        # Invoke feature extraction on our test object
+        self.mFeatureExtractor.extractFeatures()
+        
+        # Make local sample removal count
+        nRmvSamples = nSamples - self.mFeatureExtractor.getSampleCnt()
+
+        # Assert local removal calculation corresponds with actual
+        self.assertEqual( nRmvSamples, 
+                          self.mFeatureExtractor.getRmvSampleCnt() )
+
+        print(self.mFeatureExtractor.trainingData)
+
 
 if __name__ == '__main__':
     unittest.main()

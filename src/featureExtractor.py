@@ -27,7 +27,9 @@ class FeatureExtractor( metaclass=ABCMeta ):
         # Initialize feature set and training data from raw data
         self.features = self.rawData[0]
         self.trainingData = np.array( self.rawData[1:] )
-
+        
+        # Initialize number of samples removed
+        self.nRmvSamples = 0
 
     def setOutCSVPath( self , fPath ):
         '''@param fPath: relative location and name of feature dump CSV'''
@@ -40,6 +42,14 @@ class FeatureExtractor( metaclass=ABCMeta ):
 
     def getTrainingData( self ):
         return self.trainingData
+
+    
+    def getSampleCnt( self ):
+        return len( self.trainingData )
+
+
+    def getRmvSampleCnt( self ):
+        return self.nRmvSamples
 
 
     def listIdx( self, feature ):
