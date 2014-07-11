@@ -18,31 +18,6 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         # Invoke the super's constructor with the InputReader
         super().__init__( inputReader )
 
-        # Set the feature set - TODO: should prob be resource driven
-        # NOTE - this most likely to be replaced w/ features attribute; resource
-        #        must only contain columns of interest
-        self.featureSet = {'loan_amnt', 'funded_amnt', 'term', 'int_rate',
-                           'installment', 'sub_grade', 'emp_length', 
-                           'home_ownership', 'annual_inc', 'is_inc_v',
-                           'loan_status', 'purpose', 'addr_state',
-                           'acc_now_delinq', 'acc_open_past_24mnths',
-                           'percent_bc_gt_75', 'bc_util', 'dti', 'delinq_2yrs',
-                           'delinq_amnt', 'earliest_cr_line', 'inq_last_6mths',
-                           'mths_since_last_delinq',
-                           'mths_since_recent_revol_delinq',
-                           'mths_since_recent_bc', 'mort_acc', 'open_acc',
-                           'pub_rec', 'total_bal_ex_mort', 'revol_bal',
-                           'revol_bal', 'revol_util', 'total_bc_limit',
-                           'total_acc', 'out_prncp', 'num_rev_accts',
-                           'mths_since_recent_bc_dlq', 'num_rec_bankruptcies',
-                           'num_accts_ever_120_pd', 'chargeoff_within_12_mths',
-                           'tax_liens', 'mths_since_last_major_derog',
-                           'num_sats', 'num_tl_op_past_12m', 'mo_sin_rcnt_tl',
-                           'tot_hi_cred_lim', 'tot_cur_bal', 'avg_cur_bal',
-                           'num_bc_tl', 'num_actv_bc_tl', 'num_bc_sats',
-                           'pct_tl_nvr_dlq', 'num_tl_90g_dpd_24m',
-                           'num_tl_30dpd', 'num_tl_120dpd_2m'}
-
         # Set the feature set which needs conversion - TODO: resource driven
         self.featureConvLookup = {'term', 'int_rate', 'sub_grade', 'emp_length',
                                   'home_ownership', 'is_inc_v', 'loan_status',
@@ -289,8 +264,9 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
             # First digitize output and remove unclassified samples
             idx = self.listIdx( 'loan_status' )
             loanStatus = self.statusConversion( training_sample )
-            if loanStatus == 0 or 1:
-                training_sample[idx] = self.statusConversion( training_sample )
+
+            if loanStatus == 0 or loanStatus == 1:
+                training_sample[idx] = loanStatus
             else:
                 # Mark dirty sample and increment rmv cnt
                 mDirtList.append( i )

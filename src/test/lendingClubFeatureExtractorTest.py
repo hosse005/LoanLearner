@@ -232,7 +232,6 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
     def test_extractFeatures( self ):
         '''Feature extraction test'''
 
-        # First, test training sample removal functionality
         # Get initial training sample count
         nSamples = self.mFeatureExtractor.getSampleCnt()
 
@@ -245,8 +244,6 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
         # Assert local removal calculation corresponds with actual
         self.assertEqual( nRmvSamples, 
                           self.mFeatureExtractor.getRmvSampleCnt() )
-
-        print(self.mFeatureExtractor.trainingData)
 
 
 if __name__ == '__main__':
