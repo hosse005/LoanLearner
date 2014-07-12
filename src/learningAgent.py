@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 from abc import ABCMeta, abstractmethod
+from sklearn import preprocessing
 import numpy as np
-import random
 
 class LearningAgent( metaclass=ABCMeta ):
     ''' 
@@ -31,8 +31,14 @@ class LearningAgent( metaclass=ABCMeta ):
         # Separate data into subsets with default parameters
         self.sampleSplice( self.tstFraction )
 
+        # Create a scaler preprocessing object and pass it our training subset
+        # Note: scale data w/ training subset and apply to test subset as well
+        self.scaler = preprocessing.StandardScaler().fit( self.X_train )
+        self.scaler.transform( self.X_train )
+        self.scaler.transform( self.X_test )
 
-    def sampleSlice( self, fraction ):
+
+    def sampleSlice( self, fraction=None ):
         '''
         Split data into training and test subsets
         @param fraction: 0 to 1 fraction of training data to be used for
@@ -42,8 +48,6 @@ class LearningAgent( metaclass=ABCMeta ):
         # First, check that fraction argument is between 0 and 1
         if fraction < 0 or fraction > 1 or fraction is None:
             fraction = 0.2
-            print('No or bad value passed to LearningAgent.sampleSplice !')
-            print('Default value of 0.2 being assigned to fraction')
 
         # Get sample length and subset boundary
         nSamples = len( self.trainingData )
@@ -59,10 +63,21 @@ class LearningAgent( metaclass=ABCMeta ):
         self.y_test = self.trainingData[tst_idx:,self.y_idx]
         
 
-    def shuffleSamples( self ):
-        '''Shuffle training sample order'''
-        # Use python random module for shuffling data
-        self.trainingData = random.shuffle( self.trainingData )
+    def shuffleSamples( self , seed=None ):
+        '''
+        Shuffle training sample order
+        @param seed: random number gen repeatability, intended for test
+        '''
+        
+        # First check if were passed a seed
+        if seed is not None:
+            np.random.seed( seed )
+
+        # Use numpy random module for generating random indices
+        indices = np.random.permutation( len( self.trainingData) )
+
+        # Shuffle data based on randomly generated indices
+        self.trainingData = self.trainingData[indices]
 
         # Reassign training and test subsets
         self.sampleSlice( self.tstFraction )
