@@ -29,14 +29,10 @@ class LearningAgent( metaclass=ABCMeta ):
         self.tstFraction = 0.2
 
         # Separate data into subsets with default parameters
-        self.sampleSplice( self.tstFraction )
+        self.sampleSlice( self.tstFraction )
 
-        # Create a scaler preprocessing object and pass it our training subset
-        # Note: scale data w/ training subset and apply to test subset as well
-        self.scaler = preprocessing.StandardScaler().fit( self.X_train )
-        self.scaler.transform( self.X_train )
-        self.scaler.transform( self.X_test )
-
+        # Normalize sample data
+        self.normalizeSamples()
 
     def sampleSlice( self, fraction=None ):
         '''
@@ -55,12 +51,22 @@ class LearningAgent( metaclass=ABCMeta ):
         
         # Assign member data based on calculated test index
         self.X_train = self.trainingData[:tst_idx]
-        self.X_train = np.delete( self.X_train, [:,self.y_idx] )
+        self.X_train = np.delete( self.X_train, self.y_idx, 1 )
         self.y_train = self.trainingData[:tst_idx,self.y_idx]
 
         self.X_test = self.trainingData[tst_idx:]
-        self.X_test = np.delete( self.X_test, [:,self.y_idx] )
+        self.X_test = np.delete( self.X_test, self.y_idx, 1 )
         self.y_test = self.trainingData[tst_idx:,self.y_idx]
+
+
+    def normalizeSamples( self ):
+        '''Normalize training samples to zero mean and unit deviation'''
+
+        # Create a scaler preprocessing object and pass it our training subset
+        # Note: scale data w/ training subset and apply to test subset as well
+        self.scaler = preprocessing.StandardScaler().fit( self.X_train )
+        self.scaler.transform( self.X_train )
+        self.scaler.transform( self.X_test )
         
 
     def shuffleSamples( self , seed=None ):
@@ -92,6 +98,10 @@ class LearningAgent( metaclass=ABCMeta ):
         '''Allow for training data to be updated'''
         self.trainingData = data
 
+
+    def getTrainingData( self ):
+        '''Mechanism for retrieving training data'''
+        return self.trainingData
 
     @abstractmethod
     def trainModel( self ):

@@ -43,6 +43,10 @@ class FeatureExtractor( metaclass=ABCMeta ):
     def getTrainingData( self ):
         return self.trainingData
 
+
+    def setTrainingData( self, data ):
+        self.trainingData = data
+
     
     def getSampleCnt( self ):
         return len( self.trainingData )
