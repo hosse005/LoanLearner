@@ -45,6 +45,7 @@ class FeatureExtractor( metaclass=ABCMeta ):
 
 
     def setTrainingData( self, data ):
+        assert( isinstance( data, np.ndarray ) )
         self.trainingData = data
 
     

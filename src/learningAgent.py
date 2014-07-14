@@ -34,6 +34,7 @@ class LearningAgent( metaclass=ABCMeta ):
         # Normalize sample data
         self.normalizeSamples()
 
+
     def sampleSlice( self, fraction=None ):
         '''
         Split data into training and test subsets
@@ -43,7 +44,7 @@ class LearningAgent( metaclass=ABCMeta ):
 
         # First, check that fraction argument is between 0 and 1
         if fraction < 0 or fraction > 1 or fraction is None:
-            fraction = 0.2
+            fraction = self.tstFraction
 
         # Get sample length and subset boundary
         nSamples = len( self.trainingData )
@@ -96,12 +97,14 @@ class LearningAgent( metaclass=ABCMeta ):
 
     def setTrainingData( self, data ):
         '''Allow for training data to be updated'''
+        assert( isinstance( data, np.ndarray ) )
         self.trainingData = data
 
 
     def getTrainingData( self ):
         '''Mechanism for retrieving training data'''
         return self.trainingData
+
 
     @abstractmethod
     def trainModel( self ):

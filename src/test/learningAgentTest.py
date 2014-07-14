@@ -5,6 +5,7 @@ sys.path.append( '..' )
 from inputReader import InputReader
 from lendingClubFeatureExtractor import LendingClubFeatureExtractor
 from learningAgent import LearningAgent
+from math import ceil, fabs
 import numpy as np
 import unittest
 
@@ -14,7 +15,11 @@ g_testArray = np.array( [[0.34,   -9.7,   12.2, 1.4e-4, -3.4e5, 5.8e4,
                          [0.685,  -14.3,  29., -1.4e-4, -4.5e4, 4.9e4,
                           0.685,  -14.3,  29., -1.4e-4, -4.5e4, 4.9e4],
                          [0.2343, -13.33, 25.,  1.4e-5, -5.3e5, 1.9e5,
-                          0.2343, -13.33, 25.,  1.4e-5, -5.3e5, 1.9e5]] )
+                          0.2343, -13.33, 25.,  1.4e-5, -5.3e5, 1.9e5], 
+                         [0.792,  -12.2,  33.3, 1.4e-6, -5.2e5, 2.9e4,
+                          0.792,  -12.2,  33.3, 1.4e-6, -5.2e5, 2.9e4],
+                         [0.792,  -12.2,  33.3, 1.4e-6, -5.2e5, 2.9e4,
+                          0.792,  -12.2,  33.3, 1.4e-6, -5.2e5, 2.9e4]] )
 
 # Test resource must be relative to class under test - Not used
 testFile = '../../res/LendingClubFeatureExtractorTest.csv'
@@ -62,6 +67,50 @@ class LearningAgentTest( unittest.TestCase ):
         '''Test getTrainingData() function returns correct data'''
         np.testing.assert_array_equal( self.mLearningAgent.getTrainingData(),
                                        g_testArray )
+
+
+    def test_sampleSlice( self ):
+        '''Test sampleSlice() function correctly splits test and train data'''
+        
+        # Configure the data to be split evenly for the test
+        self.mLearningAgent.sampleSlice( 0.5 )
+
+        # Get the target feature index
+        m_yIdx = self.mFeatureExtractor.listIdx( 'loan_status' )
+
+        # Slice boundary
+        mBnd = ceil( len(g_testArray) / 2 )
+        
+        # Generate X_train test array checksum
+        m_X_train_sum = np.sum( g_testArray[:mBnd] )
+        m_X_train_sum = m_X_train_sum - np.sum( g_testArray[:mBnd, m_yIdx] )
+
+        # Verify sums match w/in some small tolerance
+        self.assertTrue( fabs( m_X_train_sum - 
+                               np.sum( self.mLearningAgent.X_train ) < 0.001 ) )
+
+        # Generate X_test test array checksum
+        m_X_test_sum = np.sum( g_testArray[mBnd:] )
+        m_X_test_sum = m_X_test_sum - np.sum( g_testArray[mBnd:, m_yIdx] )
+        
+        # Verify sums match w/in some small tolerance
+        self.assertTrue( fabs( m_X_test_sum - 
+                               np.sum( self.mLearningAgent.X_test ) < 0.001 ) )
+
+        # Generate y_train array checksum
+        m_y_train_sum = np.sum( g_testArray[:mBnd, m_yIdx] )
+
+        # Verify sums match w/in some small tolerance
+        self.assertTrue( fabs( m_y_train_sum - 
+                               np.sum( self.mLearningAgent.y_train ) < 0.001 ) )
+
+        # Generate y_test array checksum
+        m_y_test_sum = np.sum( g_testArray[mBnd:, m_yIdx] )
+
+        # Verify sums match w/in some small tolerance
+        self.assertTrue( fabs( m_y_test_sum - 
+                               np.sum( self.mLearningAgent.y_test ) < 0.001 ) )
+
                                            
 if __name__ == '__main__':
     unittest.main()
