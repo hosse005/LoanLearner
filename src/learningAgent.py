@@ -28,12 +28,6 @@ class LearningAgent( metaclass=ABCMeta ):
         # Set the test fraction to default value
         self.tstFraction = 0.2
 
-        # Separate data into subsets with default parameters
-        #self.sampleSlice( self.tstFraction )
-
-        # Standardize sample data
-        #self.standardizeSamples()
-
 
     def sampleSlice( self, fraction=None ):
         '''
@@ -99,9 +93,6 @@ class LearningAgent( metaclass=ABCMeta ):
         '''Allow for training data to be updated'''
         assert( isinstance( data, np.ndarray ) )
         self.trainingData = data
-
-        # Reassign training and test subsets
-        #self.sampleSlice( self.tstFraction )
 
 
     def getTrainingData( self ):
