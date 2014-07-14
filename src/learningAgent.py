@@ -86,6 +86,7 @@ class LearningAgent( metaclass=ABCMeta ):
 
     def setTstFraction( self, fraction ):
         '''Allow for test subset fraction to be set'''
+        assert( fraction > 0 and fraction < 1 )
         self.tstFraction = fraction
 
 
