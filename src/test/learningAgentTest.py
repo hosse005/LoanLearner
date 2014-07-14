@@ -5,7 +5,7 @@ sys.path.append( '..' )
 from inputReader import InputReader
 from lendingClubFeatureExtractor import LendingClubFeatureExtractor
 from learningAgent import LearningAgent
-from math import ceil, fabs
+from math import ceil, fabs, sqrt
 import numpy as np
 import unittest
 
@@ -111,6 +111,35 @@ class LearningAgentTest( unittest.TestCase ):
         self.assertTrue( fabs( m_y_test_sum - 
                                np.sum( self.mLearningAgent.y_test ) < 0.001 ) )
 
+
+    def test_normalizeSamples( self ):
+        '''
+        Test normalizeSamples() function calculates mean and deviation and 
+        applies it properly to all samples of a given feature
+        Note: Just testing the first feature here
+        '''
+
+        # Calculate average and standard deviation
+        mSum = sum( self.mLearningAgent.X_train[:, 0] )
+        mAvg = mSum / len( self.mLearningAgent.X_train[:, 0] )
+        mStdDev = sum( np.subtract( self.mLearningAgent.X_train[:, 0], mAvg ) )
+        mStdDev = sqrt( fabs( 
+            mStdDev / len( self.mLearningAgent.X_train[:, 0] ) ) )
+
+        # Apply calculated average and standard deviation to samples
+        mNorm = np.divide( np.subtract( self.mLearningAgent.X_train[:, 0],
+                                        mSum ), mStdDev )
+
+        # Execute LearningAgent implementation
+        self.mLearningAgent.normalizeSamples()
+
+        print(mNorm)
+        print(self.mLearningAgent.X_train[:,0])
+        # Assert local calculation matches with LearningAgent implementation
+        self.assertTrue( fabs( sum(
+            np.subtract( mNorm, self.mLearningAgent.X_train[:, 0] ) ) )
+                         < 0.001 )
+        
                                            
 if __name__ == '__main__':
     unittest.main()

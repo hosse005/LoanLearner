@@ -100,6 +100,9 @@ class LearningAgent( metaclass=ABCMeta ):
         assert( isinstance( data, np.ndarray ) )
         self.trainingData = data
 
+        # Reassign training and test subsets
+        self.sampleSlice( self.tstFraction )
+
 
     def getTrainingData( self ):
         '''Mechanism for retrieving training data'''
