@@ -112,29 +112,31 @@ class LearningAgentTest( unittest.TestCase ):
                                np.sum( self.mLearningAgent.y_test ) < 0.001 ) )
 
 
-    def test_normalizeSamples( self ):
+    def test_standardizeSamples( self ):
         '''
-        Test normalizeSamples() function calculates mean and deviation and 
+        Test standardizeSamples() function calculates mean and deviation and 
         applies it properly to all samples of a given feature
         Note: Just testing the first feature here
         '''
 
+        # Configure the data to be split evenly for the test
+        self.mLearningAgent.sampleSlice( 0.5 )
+
         # Calculate average and standard deviation
         mSum = sum( self.mLearningAgent.X_train[:, 0] )
         mAvg = mSum / len( self.mLearningAgent.X_train[:, 0] )
-        mStdDev = sum( np.subtract( self.mLearningAgent.X_train[:, 0], mAvg ) )
+        mStdDev = sum( np.square( np.subtract( 
+            self.mLearningAgent.X_train[:, 0], mAvg ) ) )
         mStdDev = sqrt( fabs( 
             mStdDev / len( self.mLearningAgent.X_train[:, 0] ) ) )
 
         # Apply calculated average and standard deviation to samples
         mNorm = np.divide( np.subtract( self.mLearningAgent.X_train[:, 0],
-                                        mSum ), mStdDev )
+                                        mAvg ), mStdDev )
 
         # Execute LearningAgent implementation
-        self.mLearningAgent.normalizeSamples()
+        self.mLearningAgent.standardizeSamples()
 
-        print(mNorm)
-        print(self.mLearningAgent.X_train[:,0])
         # Assert local calculation matches with LearningAgent implementation
         self.assertTrue( fabs( sum(
             np.subtract( mNorm, self.mLearningAgent.X_train[:, 0] ) ) )

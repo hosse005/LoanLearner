@@ -29,10 +29,10 @@ class LearningAgent( metaclass=ABCMeta ):
         self.tstFraction = 0.2
 
         # Separate data into subsets with default parameters
-        self.sampleSlice( self.tstFraction )
+        #self.sampleSlice( self.tstFraction )
 
-        # Normalize sample data
-        self.normalizeSamples()
+        # Standardize sample data
+        #self.standardizeSamples()
 
 
     def sampleSlice( self, fraction=None ):
@@ -60,14 +60,14 @@ class LearningAgent( metaclass=ABCMeta ):
         self.y_test = self.trainingData[tst_idx:,self.y_idx]
 
 
-    def normalizeSamples( self ):
-        '''Normalize training samples to zero mean and unit deviation'''
+    def standardizeSamples( self ):
+        '''Standardize training samples to zero mean and unit deviation'''
 
         # Create a scaler preprocessing object and pass it our training subset
         # Note: scale data w/ training subset and apply to test subset as well
         self.scaler = preprocessing.StandardScaler().fit( self.X_train )
-        self.scaler.transform( self.X_train )
-        self.scaler.transform( self.X_test )
+        self.X_train = self.scaler.transform( self.X_train )
+        self.X_test = self.scaler.transform( self.X_test )
         
 
     def shuffleSamples( self , seed=None ):
@@ -101,7 +101,7 @@ class LearningAgent( metaclass=ABCMeta ):
         self.trainingData = data
 
         # Reassign training and test subsets
-        self.sampleSlice( self.tstFraction )
+        #self.sampleSlice( self.tstFraction )
 
 
     def getTrainingData( self ):
