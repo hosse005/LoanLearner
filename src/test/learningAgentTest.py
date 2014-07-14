@@ -41,7 +41,7 @@ class DummyLearningAgentImpl( LearningAgent ):
         pass
 
 
-class FeatureExtractorTest( unittest.TestCase ):
+class LearningAgentTest( unittest.TestCase ):
 
     def setUp( self ):
         '''Set up the dependencies for the test execution'''
@@ -58,12 +58,10 @@ class FeatureExtractorTest( unittest.TestCase ):
         self.mLearningAgent = DummyLearningAgentImpl( self.mFeatureExtractor )
 
 
-    def test_getFeatures( self ):
+    def test_getTrainingData( self ):
         '''Test getTrainingData() function returns correct data'''
-        print(g_testArray)
-        print(self.mLearningAgent.getTrainingData())
-        self.assertEqual( self.mLearningAgent.getTrainingData(), g_testArray )
-
-    
+        np.testing.assert_array_equal( self.mLearningAgent.getTrainingData(),
+                                       g_testArray )
+                                           
 if __name__ == '__main__':
     unittest.main()
