@@ -37,7 +37,7 @@ class LearningAgent( metaclass=ABCMeta ):
         '''
 
         # First, check that fraction argument is between 0 and 1
-        if fraction < 0 or fraction > 1 or fraction is None:
+        if fraction is None or fraction < 0 or fraction > 1:
             fraction = self.tstFraction
 
         # Get sample length and subset boundary
