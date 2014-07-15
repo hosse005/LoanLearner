@@ -10,7 +10,9 @@ import re
 from datetime import datetime
 
 class LendingClubFeatureExtractor( FeatureExtractor ):
-    ''' Dummy Feature Extractor class used for unit test of the base class'''
+    ''' 
+    LendingClub implementation of the FeatureExtractor base class
+    '''
 
     def __init__( self , inputReader ):
         '''@param inputReader: InputReader object for fetching raw data'''
