@@ -141,6 +141,23 @@ class LearningAgentTest( unittest.TestCase ):
         self.assertTrue( fabs( sum(
             np.subtract( mNorm, self.mLearningAgent.X_train[:, 0] ) ) )
                          < 0.001 )
+
+
+    def test_shuffleSamples( self ):
+        '''Test shuffleSamples() function shuffles samples correctly'''
+        
+        # Initialize random number generator w/ known seed
+        np.random.seed( 1 )
+
+        # Generate index list
+        m_indices = np.random.permutation( len( g_testArray ) )
+
+        # Make LearningAgent call w/ the same seed
+        self.mLearningAgent.shuffleSamples( 1 )
+
+        # Assert data is shuffled as expected
+        np.testing.assert_array_equal( g_testArray[m_indices], 
+                                       self.mLearningAgent.trainingData )
         
                                            
 if __name__ == '__main__':
