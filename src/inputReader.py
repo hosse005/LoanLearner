@@ -29,6 +29,10 @@ class InputReader:
         self.__inputFilePath = fPath
 
     def readFile( self ):
+
+        # Log status - TODO: move this to a logging class
+        print( 'Reading input file..' )
+
         for row in self.__reader:
             self.__rawData.append( row )
 

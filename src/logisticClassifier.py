@@ -30,11 +30,19 @@ class LogisticClassifier( LearningAgent ):
 
     def trainModel( self ):
         '''Train the classifier with the X_train and y_train members'''
+        
+        # Log status - TODO: move this to a logging class
+        print( 'Training on %d samples' % len( self.X_train ) )
+        
         self.clf.fit( self.X_train, self.y_train )
 
 
     def crossValidate( self ):
         '''Return the model's accuracy on the test data set'''
+
+        # Log status - TODO: move this to a logging class
+        print( 'Testing on %d samples' % len( self.X_test ) )
+        
         return self.clf.score( self.X_test, self.y_test ) 
     
 

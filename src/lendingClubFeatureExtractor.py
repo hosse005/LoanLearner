@@ -250,7 +250,10 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
 
     def extractFeatures( self ):
         '''Convert training data to format suitable for learning where needed'''
-        
+
+        # Log status - TODO: move this to a logging class
+        print( 'Preprocessing the data..' )
+
         # Create a dirt set for removing samples
         mDirtSet = set()
 
@@ -369,9 +372,11 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         # Remove all marked dirty samples
         self.nRmvSamples = len( mDirtSet )
         self.trainingData = np.delete( self.trainingData, list( mDirtSet ), 0 )
-        print(mDirtSet)
-        print( 'Number of samples removed = %d' % self.nRmvSamples )
         self.trainingData = self.trainingData.astype( float )
+
+        # Log status - TODO: move this to a logging class
+        print( 'Removed = %d of %d input samples' % (
+            self.nRmvSamples, len( self.trainingData ) + self.nRmvSamples ) )
 
     def __del__( self ):
         pass
