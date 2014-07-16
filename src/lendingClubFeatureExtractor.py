@@ -210,15 +210,10 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
 
         # Get index of earliest credit line feature
         idx = self.listIdx( 'earliest_cr_line' )
-        
-        # Convert the date to a datetime object
-        try:
-            earlyCrLine = datetime.strptime( training_sample[idx],
-                                             "%m/%d/%Y  %H:%M" )
-        except ValueError as ve:
-            print( "Incorrect date format read from input file!" )
-            print( "Error: %s" % ve )
-            return 0
+
+        # Convert the date to a datetime object        
+        earlyCrLine = datetime.strptime( training_sample[idx],
+                                         "%m/%d/%Y  %H:%M" )
 
         # Convert datetime object to float seconds since epoch
         earlyCrLine -= datetime(1970, 1, 1)
