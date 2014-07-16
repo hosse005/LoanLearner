@@ -325,7 +325,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
             # Finally, convert all training data to float type
             # Remove the sample if it throws an exception
             try:
-                training_sample  = np.asfarray( training_sample )
+                training_sample = training_sample.astype( float )
             except ValueError as ve:
                 # Mark dirty sample and increment rmv cnt
                 mDirtList.append( i )
@@ -333,6 +333,7 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
 
         # Remove all marked dirty samples
         self.trainingData = np.delete( self.trainingData, mDirtList, 0 )
+        self.trainingData = self.trainingData.astype( float )
 
     def __del__( self ):
         pass
