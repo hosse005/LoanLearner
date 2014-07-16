@@ -256,8 +256,8 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
     def extractFeatures( self ):
         '''Convert training data to format suitable for learning where needed'''
         
-        # Create a dirt list for removing samples
-        mDirtList = list()
+        # Create a dirt set for removing samples
+        mDirtSet = set()
 
         # Loop through all training samples and run conversions - TODO: this
         # could/should have a parallel implementation for performance
@@ -270,9 +270,8 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
             if loanStatus == 0 or loanStatus == 1:
                 training_sample[idx] = loanStatus
             else:
-                # Mark dirty sample and increment rmv cnt
-                mDirtList.append( i )
-                self.nRmvSamples += 1
+                # Mark dirty sample
+                mDirtSet.add( i )
                 continue
 
             # If we have a valid sample, run through all conversions and update
@@ -280,59 +279,103 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
 
             # Loan term conversion
             idx = self.listIdx( 'term' )
-            training_sample[idx] = self.termConversion( training_sample )
+            try:
+                training_sample[idx] = self.termConversion( training_sample )
+            except ValueError:
+                # Mark dirty sample
+                mDirtSet.add( i )
             
             # Loan interest rate conversion
             idx = self.listIdx( 'int_rate' )
-            training_sample[idx] = self.pcntRemove( training_sample, 
-                                                    'int_rate' )
+            try:
+                training_sample[idx] = self.pcntRemove( training_sample, 
+                                                        'int_rate' )
+            except ValueError:
+                # Mark dirty sample
+                mDirtSet.add( i )
 
             # Revolving utility conversion
             idx = self.listIdx( 'revol_util' )
-            training_sample[idx] = self.pcntRemove( training_sample, 
-                                                    'revol_util' )
+            try:
+                training_sample[idx] = self.pcntRemove( training_sample, 
+                                                        'revol_util' )
+            except ValueError:
+                # Mark dirty sample
+                mDirtSet.add( i )
 
             # Loan grade hash
             idx = self.listIdx( 'sub_grade' )
-            training_sample[idx] = self.loanGradeHash( training_sample )
+            try:
+                training_sample[idx] = self.loanGradeHash( training_sample )
+            except ValueError:
+                # Mark dirty sample
+                mDirtSet.add( i )
 
             # Employment length conversion
             idx = self.listIdx( 'emp_length' )
-            training_sample[idx] = self.empLengthConversion( training_sample )
+            try:
+                training_sample[idx] = self.empLengthConversion(
+                    training_sample )
+            except ValueError:
+                # Mark dirty sample
+                mDirtSet.add( i )
             
             # Home ownership enumeration
             idx = self.listIdx( 'home_ownership' )
-            training_sample[idx] = self.homeOwnershipEnumerator( 
-                training_sample )
+            try:
+                training_sample[idx] = self.homeOwnershipEnumerator( 
+                    training_sample )
+            except ValueError:
+                # Mark dirty sample
+                mDirtSet.add( i )
 
             # Income verification conversion
             idx = self.listIdx( 'is_inc_v' )
-            training_sample[idx] = self.incomeVerifiedConversion(
-                training_sample )
+            try:
+                training_sample[idx] = self.incomeVerifiedConversion(
+                    training_sample )
+            except ValueError:
+                # Mark dirty sample
+                mDirtSet.add( i )
 
             # Loan purpose enumeration
             idx = self.listIdx( 'purpose' )
-            training_sample[idx] = self.purposeEnumerator( training_sample )
+            try:
+                training_sample[idx] = self.purposeEnumerator( training_sample )
+            except ValueError:
+                # Mark dirty sample
+                mDirtSet.add( i )
 
             # State enumeration
             idx = self.listIdx( 'addr_state' )
-            training_sample[idx] = self.stateEnumerator( training_sample )
+            try:
+                training_sample[idx] = self.stateEnumerator( training_sample )
+            except ( ValueError, KeyError ):
+                # Mark dirty sample
+                mDirtSet.add( i )
 
             # Earliest credit line conversion
             idx = self.listIdx( 'earliest_cr_line' )
-            training_sample[idx] = self.earlyCrLineConversion( training_sample )
+            try:
+                training_sample[idx] = self.earlyCrLineConversion( 
+                    training_sample )
+            except ValueError:
+                # Mark dirty sample
+                mDirtSet.add( i )
 
             # Finally, convert all training data to float type
             # Remove the sample if it throws an exception
             try:
                 training_sample = training_sample.astype( float )
-            except ValueError as ve:
-                # Mark dirty sample and increment rmv cnt
-                mDirtList.append( i )
-                self.nRmvSamples += 1
+            except ValueError:
+                # Mark dirty sample
+                mDirtSet.add( i )
 
         # Remove all marked dirty samples
-        self.trainingData = np.delete( self.trainingData, mDirtList, 0 )
+        self.nRmvSamples = len( mDirtSet )
+        self.trainingData = np.delete( self.trainingData, list( mDirtSet ), 0 )
+        print(mDirtSet)
+        print( 'Number of samples removed = %d' % self.nRmvSamples )
         self.trainingData = self.trainingData.astype( float )
 
     def __del__( self ):
