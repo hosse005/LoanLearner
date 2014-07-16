@@ -46,9 +46,6 @@ def main():
     # Construct the InputReader w/ our input file
     mInputReader = InputReader( m_inputFile )
 
-    # Read the data from the input file
-    mInputReader.readFile()
-
     # Next, construct our LendingClubFeatureExtractor object
     mFeatureExtractor = LendingClubFeatureExtractor( mInputReader )
 
