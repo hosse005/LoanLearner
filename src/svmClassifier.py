@@ -4,36 +4,45 @@ import sys
 sys.path.append( '..' )
 from featureExtractor import FeatureExtractor
 from learningAgent import LearningAgent
-from sklearn import linear_model
+from sklearn import svm
 import numpy as np
 
-class LogisticClassifier( LearningAgent ):
+class SVMClassifier( LearningAgent ):
     ''' 
-    Logistic Regression implementation of the LearningAgent base class
+    Support Vector Machine implementation of the LearningAgent base class
     '''
 
-    def __init__( self , featureExtractor ):
+    def __init__( self , featureExtractor, kernel='rbf' ):
         '''
         @param featureExtractor: FeatureExtractor object for fetching
         preprocessed training data
+        @param kernel: Type of kernel to use with the SVM
         '''
         
         # Invoke the super's constructor with the FeatureExtractor
         super().__init__( featureExtractor )
 
-        # Set default regularization parameter to be 1e5
-        self.reg = 1e5
+        # Set default regularization parameter to be 1
+        self.reg = 1
+
+        # Set the kernel type
+        self.kernel = kernel
 
         # Create the classifier
-        self.clf = linear_model.LogisticRegression( C=self.reg )
+        '''
+        @param C: inverse of regularization, larger C -> lower regularization
+        @param kernel: type of kernel to be used in the SVM
+        @param probability: enables probability output capability for the 
+        classifier, increases time to learn
+        '''
+        self.clf = svm.SVC( C=self.reg, kernel=self.kernel, probability=True )
 
 
     def trainModel( self ):
         '''Train the classifier with the X_train and y_train members'''
         
         # Log status - TODO: move this to a logging class
-        print( 'Training on %d samples w/ Logistic Regression' 
-               % len( self.X_train ) )
+        print( 'Training on %d samples w/ SVM' % len( self.X_train ) )
         
         self.clf.fit( self.X_train, self.y_train )
 
@@ -68,4 +77,3 @@ class LogisticClassifier( LearningAgent ):
         
     def __del__( self ):
         pass
-
