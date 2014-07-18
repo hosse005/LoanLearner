@@ -13,7 +13,7 @@ from svmClassifier import SVMClassifier
 0.0.1 = First working implemenation - logistic regression
 0.0.2 = Added first SVM learner
 '''
-appVersion = '0.0.1'
+appVersion = '0.0.2'
 
 # Default input source must be relative to this main entry script
 defaultInput = '../res/LendingClubFeatureExtractorTest.csv'
