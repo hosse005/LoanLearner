@@ -42,7 +42,8 @@ class SVMClassifier( LearningAgent ):
         '''Train the classifier with the X_train and y_train members'''
         
         # Log status - TODO: move this to a logging class
-        print( 'Training on %d samples w/ SVM' % len( self.X_train ) )
+        print( 'Training on %d samples w/ SVM (%s kernel)' % 
+               ( len( self.X_train ), self.kernel ) )
         
         self.clf.fit( self.X_train, self.y_train )
 
