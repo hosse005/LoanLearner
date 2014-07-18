@@ -48,6 +48,11 @@ def main():
                          'linear', 'poly', 'rbf'(default), or 'sigmoid' ", 
                          required=False, default='rbf' )
 
+    # Add option to specify the test fraction used for learning
+    parser.add_argument( '--testFraction', dest='tstFrac',
+                         help="Fraction of data to be used for test, must be \
+                         between 0 and 1", required=False, default=0.2 )
+
     # TODO - add option to specify pre-training dump file
     '''
     parser.add_argument( '-d', '--preTrainDump', dest='dumpFile',
@@ -59,6 +64,7 @@ def main():
     m_inputFile = args.inputFile
     m_cls = args.cls
     m_kernel = args.kernel
+    m_tstFrac = float(args.tstFrac)
 
     # Generate time stamp for performance monitoring
     t0 = time.time()
@@ -80,6 +86,9 @@ def main():
     else:
         print( 'Invalid classifier passed.  See --help for valid options' )
         return
+
+    # Set the test fraction of data to use for validation
+    mLearningAgent.setTstFraction( m_tstFrac )
 
     # Apply preprocessing to the training samples
     mLearningAgent.shuffleSamples()
