@@ -65,6 +65,10 @@ class LogisticClassifier( LearningAgent ):
         assert( isinstance( data, np.ndarray ) )
         return self.clf.predict_proba( data )
 
+
+    def setRegularization( self, reg ):
+        '''Setter for regularization parameter'''
+        self.reg = reg
         
     def __del__( self ):
         pass

@@ -74,6 +74,15 @@ class SVMClassifier( LearningAgent ):
         assert( isinstance( data, np.ndarray ) )
         return self.clf.predict_proba( data )
 
+    
+    def setRegularization( self, reg ):
+        '''Setter for regularization parameter'''
+        self.reg = reg
+
+        
+    def setKernelType( self , kernel ):
+        '''Setter for kernel type'''
+        self.kernel = kernel
         
     def __del__( self ):
         pass
