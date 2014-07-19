@@ -26,45 +26,53 @@ def main():
     software package for loan analysis.  The software is used for predicting  \
     whether a given applicant is likely or not to repay a given loan.' )
 
-    # Add version option
+    # Application version readback option
     parser.add_argument( '--version', action='version', version=appVersion )
 
-
-    # Add option to pass in an input file to be processed
+    # Option to pass in an input file to be processed
     parser.add_argument( '-i', '--input', dest='inputFile',
                          help='Input File Name', required=False,
                          default=defaultInput )
 
-    # Add option to specify the type of learning agent to be used
+    # Option to specify the type of learning agent to be used
     parser.add_argument( '--classifier', dest='cls',
-                         help="Machine Learning classifier type \n \
+                         help="Machine Learning classifier type. \n \
                          Current possible options are: \n \
                          'logistic'(default), 'SVM' ", 
                          required=False, default='logistic' )
 
-    # Add option to specify the SVM kernel to be used
+    # Option to specify the SVM kernel to be used
     parser.add_argument( '-k', '--kernel', dest='kernel',
-                         help="SVM kernel type \n Possible options are: \n \
+                         help="SVM kernel type. \n Possible options are: \n \
                          'linear', 'poly', 'rbf'(default), or 'sigmoid' ", 
                          required=False, default='rbf' )
 
-    # Add option to specify the test fraction used for learning
+    # Option to specify the test fraction used for learning
     parser.add_argument( '--testFraction', dest='tstFrac',
                          help="Fraction of data to be used for test, must be \
                          between 0 and 1", required=False, default=0.2 )
 
-    # TODO - add option to specify pre-training dump file
-    '''
-    parser.add_argument( '-d', '--preTrainDump', dest='dumpFile',
-                         help='Pretrained data dump', required=False )
-    '''
+    # Option to specify pre-training dump file
+    parser.add_argument( '-d', '--dump', dest='dumpFile', 
+                         help='File location for pre-trained data dump', 
+                         required=False )
 
+    # Option to specify learning regularization parameter
+    parser.add_argument( '-C', '--reg', dest='reg', 
+                         help='Classifier regularization parameter', 
+                         required=False , default=1 )
+    
     # Grab the inputs passed
     args = parser.parse_args()
     m_inputFile = args.inputFile
     m_cls = args.cls
     m_kernel = args.kernel
     m_tstFrac = float(args.tstFrac)
+    m_reg = float(args.reg)
+    if args.dumpFile is not None:
+        m_dumpFile = args.dumpFile
+    else:
+        m_dumpFile = None
 
     # Generate time stamp for performance monitoring
     t0 = time.time()
@@ -78,6 +86,11 @@ def main():
     # Use the FeatureExtractor to convert the data for learning
     mFeatureExtractor.extractFeatures()
 
+    # Dump pre-trained data if specified by user
+    if m_dumpFile is not None:
+        mFeatureExtractor.setOutCSVPath( m_dumpFile )
+        mFeatureExtractor.writeFeaturesToCSV()
+
     # Construct a LearningAgent based on user input
     if m_cls == 'SVM':
         mLearningAgent = SVMClassifier( mFeatureExtractor, m_kernel )
@@ -89,6 +102,9 @@ def main():
 
     # Set the test fraction of data to use for validation
     mLearningAgent.setTstFraction( m_tstFrac )
+
+    # Set the learning regularization parameter
+    mLearningAgent.setRegularization( m_reg )
 
     # Apply preprocessing to the training samples
     mLearningAgent.shuffleSamples()

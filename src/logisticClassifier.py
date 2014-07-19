@@ -70,6 +70,10 @@ class LogisticClassifier( LearningAgent ):
         '''Setter for regularization parameter'''
         self.reg = reg
         
+        # Re-configure the classifier
+        self.clf = linear_model.LogisticRegression( C=self.reg )
+
+
     def __del__( self ):
         pass
 

@@ -80,10 +80,17 @@ class SVMClassifier( LearningAgent ):
         '''Setter for regularization parameter'''
         self.reg = reg
 
+        # Re-configure the classifier
+        self.clf = svm.SVC( C=self.reg, kernel=self.kernel, probability=True )
+
         
     def setKernelType( self , kernel ):
         '''Setter for kernel type'''
         self.kernel = kernel
+
+        # Re-configure the classifier
+        self.clf = svm.SVC( C=self.reg, kernel=self.kernel, probability=True )
+
         
     def __del__( self ):
         pass
