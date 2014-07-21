@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from abc import ABCMeta, abstractmethod
+from inputReader import InputReader
 import numpy as np
 import csv
 
@@ -17,9 +18,10 @@ class FeatureExtractor( metaclass=ABCMeta ):
         Constructor - arguments passed from main
         @param mInputReader: InputReader object for setting raw data
         '''
-        # Feature dump path
+        # Feature dump and filter path
         self.outCSVPath = '../../tmp/featureDump.csv'
-        
+        self.filterCSVPath = '../../res/FeatureFilter.csv'
+
         # Get raw data from the passed InputReader
         mInputReader.readFile()
         self.rawData = mInputReader.getRawData()
@@ -28,12 +30,21 @@ class FeatureExtractor( metaclass=ABCMeta ):
         self.features = self.rawData[0]
         self.trainingData = np.array( self.rawData[1:] )
         
+        # Construct the InputReader used for feature filtering
+        self.filterReader = InputReader( self.filterCSVPath )
+
         # Initialize number of samples removed
         self.nRmvSamples = 0
+
 
     def setOutCSVPath( self , fPath ):
         '''@param fPath: relative location and name of feature dump CSV'''
         self.outCSVPath = fPath
+
+
+    def setFilterCSVPath( self , fPath ):
+        '''@param fPath: relative location and name of feature filter CSV'''
+        self.filterCSVPath = fPath
 
 
     def getFeatures( self ):
@@ -64,13 +75,29 @@ class FeatureExtractor( metaclass=ABCMeta ):
         @return index: index of passed feature
         '''
         return self.features.index( feature )
+        
 
+    def applyFeatureFilter( self ):
+        ''' 
+        Reads the filter resource file and accordingly removes the feature
+        from each sample.
+        '''
+        # Read out the resource content
+        filterReader.readFile()
+
+        # Stash the results to a local list
+        mFilterList = filterReader.getRawData()
+        
+        # Use our list index method to find appropriate column in feature 
+        # list to remove
+        for feature in mFilterList:
+            try:
+                idx = listIdx( feature )
+                del self.features[idx]
+                self.trainingData = np.delete( self.trainingData, idx, 1 )
+            except ValueError:
+                print( 'Unable to remove feature %s!' % feature )
     
-    @abstractmethod
-    def extractFeatures( self ):
-        ''' This method is to be implemented by subclasses'''
-        pass
-
 
     def writeFeaturesToCSV( self ):
         ''' 
@@ -89,6 +116,12 @@ class FeatureExtractor( metaclass=ABCMeta ):
 
         # Release file i/o
         mDumpFile.close()
+
+
+    @abstractmethod
+    def extractFeatures( self ):
+        ''' This method is to be implemented by subclasses'''
+        pass
 
 
     def __del__( self ):
