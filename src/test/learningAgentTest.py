@@ -42,6 +42,9 @@ class DummyLearningAgentImpl( LearningAgent ):
 
     def genPrediction( self ):
         '''Dummy implementation'''
+
+    def getClfCoeffs( self ):
+        '''Dummy implementation'''
         
     def __del__( self ):
         pass

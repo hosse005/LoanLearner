@@ -91,6 +91,11 @@ class SVMClassifier( LearningAgent ):
         # Re-configure the classifier
         self.clf = svm.SVC( C=self.reg, kernel=self.kernel, probability=True )
 
+
+    def getClfCoeffs( self ):
+        '''Return classifier learning weights'''
+        return self.clf.coef_
+
         
     def __del__( self ):
         pass

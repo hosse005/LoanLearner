@@ -74,6 +74,11 @@ class LogisticClassifier( LearningAgent ):
         self.clf = linear_model.LogisticRegression( C=self.reg )
 
 
+    def getClfCoeffs( self ):
+        '''Return classifier learning weights'''
+        return self.clf.coef_
+
+
     def __del__( self ):
         pass
 

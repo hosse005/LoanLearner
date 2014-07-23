@@ -118,6 +118,12 @@ class LearningAgent( metaclass=ABCMeta ):
         ''' This method is to be implemented by subclasses'''
         pass
 
+    
+    @abstractmethod
+    def getClfCoeffs( self ):
+        ''' This method is to be implemented by subclasses'''
+        pass
+
 
     def __del__( self ):
         '''No Destructor implementation'''

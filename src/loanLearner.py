@@ -123,6 +123,10 @@ def main():
     print( 'Cross Validation accuracy on the test subset = %0.3f' % 
            mLearningAgent.crossValidate() )
 
+    # Print out the classifier coefficients
+    print('Classifier coefficients:')
+    print(mLearningAgent.getClfCoeffs())
+
     # Generate end time stamp and report processing time
     t1 = time.time()
     total = t1 - t0
