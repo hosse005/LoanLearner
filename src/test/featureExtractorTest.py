@@ -11,15 +11,16 @@ import unittest
 # Test resource must be relative to class under test
 testFile = '../../res/InputReaderTest.csv'
 dumpFile = '../../tmp/featureExtractorTest.csv'
+filterTestFile = '../../res/FeatureFilterTest.csv'
 
 class DummyFeatureExtractorImpl( FeatureExtractor ):
     ''' Dummy Feature Extractor class used for unit test of the base class'''
 
-    def __init__( self , inputReader ):
+    def __init__( self, inputReader, filterPath ):
         '''@param inputReader: InputReader object for fetching raw data'''
 
         # Invoke the super's constructor with the InputReader
-        super().__init__( inputReader )
+        super().__init__( inputReader, filterPath )
 
     def extractFeatures( self ):
         ''' Populate members w/ test data'''
@@ -41,7 +42,8 @@ class FeatureExtractorTest( unittest.TestCase ):
         self.mInputReader = InputReader( testFile )
 
         # Construct the class under test with the InputReader
-        self.mFeatureExtractor = DummyFeatureExtractorImpl( self.mInputReader )
+        self.mFeatureExtractor = DummyFeatureExtractorImpl( self.mInputReader,
+                                                            filterTestFile )
 
         # Extract test features
         self.mFeatureExtractor.extractFeatures()
@@ -79,6 +81,23 @@ class FeatureExtractorTest( unittest.TestCase ):
                 dumpRead.append( row )
             self.assertTrue( dumpRead, self.mFeatureExtractor.rawData )
             csvfile.close()
+
+    def test_applyFeatureFilter( self ):
+        '''Test feature filtering capability'''
+
+        # Set up filter path for test
+        self.mFeatureExtractor.setFilterPath( filterTestFile )
+
+        # Apply our filter
+        self.mFeatureExtractor.applyFeatureFilter()
+
+        # Assert we have removed the feature and corresponding data
+        self.assertFalse( self.mFeatureExtractor.filterReader.getRawData()[0] 
+                          in self.mFeatureExtractor.getFeatures(), True )
+
+        # Assert that number of features is equal to sample width
+        self.assertEqual( len( self.mFeatureExtractor.getFeatures() ), 
+                          self.mFeatureExtractor.getTrainingData().shape[1] )
 
     def test_listIdx( self ):
         '''Test list index returns correct feature index'''

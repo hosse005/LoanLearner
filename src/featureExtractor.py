@@ -13,14 +13,14 @@ class FeatureExtractor( metaclass=ABCMeta ):
     and getTrainingData() appropriately for the given input source.
     '''
 
-    def __init__( self, mInputReader ):
+    def __init__( self, mInputReader , filterPath='../res/FeatureFilter' ):
         '''
         Constructor - arguments passed from main
         @param mInputReader: InputReader object for setting raw data
         '''
         # Feature dump and filter path
         self.outCSVPath = '../../tmp/featureDump.csv'
-        self.filterCSVPath = '../../res/FeatureFilter.csv'
+        self.filterCSVPath = filterPath
 
         # Get raw data from the passed InputReader
         mInputReader.readFile()
@@ -42,7 +42,7 @@ class FeatureExtractor( metaclass=ABCMeta ):
         self.outCSVPath = fPath
 
 
-    def setFilterCSVPath( self , fPath ):
+    def setFilterPath( self , fPath ):
         '''@param fPath: relative location and name of feature filter CSV'''
         self.filterCSVPath = fPath
 
@@ -83,16 +83,16 @@ class FeatureExtractor( metaclass=ABCMeta ):
         from each sample.
         '''
         # Read out the resource content
-        filterReader.readFile()
+        self.filterReader.readFile()
 
         # Stash the results to a local list
-        mFilterList = filterReader.getRawData()
+        mFilterList = self.filterReader.getRawData()[0]
         
         # Use our list index method to find appropriate column in feature 
         # list to remove
         for feature in mFilterList:
             try:
-                idx = listIdx( feature )
+                idx = self.listIdx( feature )
                 del self.features[idx]
                 self.trainingData = np.delete( self.trainingData, idx, 1 )
             except ValueError:

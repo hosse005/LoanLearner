@@ -11,6 +11,7 @@ import unittest
 
 # Test resource must be relative to class under test
 testFile = '../../res/LendingClubFeatureExtractorTest.csv'
+filterTestFile = '../../res/FeatureFilter.csv'
 
 class LendingClubFeatureExtractorTest( unittest.TestCase ):
 
@@ -22,7 +23,7 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
 
         # Construct the class under test with the InputReader
         self.mFeatureExtractor = LendingClubFeatureExtractor( 
-            self.mInputReader )
+            self.mInputReader, filterTestFile )
 
 
     def test_termConversion( self ):

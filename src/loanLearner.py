@@ -61,6 +61,11 @@ def main():
     parser.add_argument( '-C', '--reg', dest='reg', 
                          help='Classifier regularization parameter', 
                          required=False , default=1 )
+
+    # Option to specify filter path
+    parser.add_argument( '--filter', dest='filterPath', 
+                         help='Feature Filter resource file', 
+                         required=False , default='../res/FeatureFilter.csv' )
     
     # Grab the inputs passed
     args = parser.parse_args()
@@ -73,6 +78,7 @@ def main():
         m_dumpFile = args.dumpFile
     else:
         m_dumpFile = None
+    m_filter = args.filterPath
 
     # Generate time stamp for performance monitoring
     t0 = time.time()
@@ -81,10 +87,11 @@ def main():
     mInputReader = InputReader( m_inputFile )
 
     # Next, construct our LendingClubFeatureExtractor object
-    mFeatureExtractor = LendingClubFeatureExtractor( mInputReader )
+    mFeatureExtractor = LendingClubFeatureExtractor( mInputReader, m_filter )
 
     # Use the FeatureExtractor to convert the data for learning
     mFeatureExtractor.extractFeatures()
+    mFeatureExtractor.applyFeatureFilter()
 
     # Dump pre-trained data if specified by user
     if m_dumpFile is not None:

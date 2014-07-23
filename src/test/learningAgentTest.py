@@ -23,6 +23,7 @@ g_testArray = np.array( [[0.34,   -9.7,   12.2, 1.4e-4, -3.4e5, 5.8e4,
 
 # Test resource must be relative to class under test - Not used
 testFile = '../../res/LendingClubFeatureExtractorTest.csv'
+filterFile = '../../res/FeatureFilterTest.csv'
 
 class DummyLearningAgentImpl( LearningAgent ):
     ''' Dummy Learning Agent class used for unit test of the base class'''
@@ -53,8 +54,9 @@ class LearningAgentTest( unittest.TestCase ):
 
         # Construct an InputReader and FeatureExtractor for dependency injection
         self.mInputReader = InputReader( testFile )
-        self.mFeatureExtractor = LendingClubFeatureExtractor( self.mInputReader
-                                                            )
+        self.mFeatureExtractor = LendingClubFeatureExtractor( self.mInputReader,
+                                                              filterFile )
+                                                              
 
         # Push our local test data into the FeatureExtractor
         self.mFeatureExtractor.setTrainingData( g_testArray )

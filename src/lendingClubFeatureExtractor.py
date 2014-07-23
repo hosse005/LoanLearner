@@ -14,17 +14,27 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
     LendingClub implementation of the FeatureExtractor base class
     '''
 
-    def __init__( self , inputReader ):
+    def __init__( self , inputReader , filterPath):
         '''@param inputReader: InputReader object for fetching raw data'''
 
-        # Invoke the super's constructor with the InputReader
-        super().__init__( inputReader )
+        # Invoke the super's constructor with the InputReader and filterPath
+        super().__init__( inputReader, filterPath )
 
-        # Set the feature set which needs conversion - TODO: resource driven
-        self.featureConvLookup = {'term', 'int_rate', 'sub_grade', 'emp_length',
-                                  'home_ownership', 'is_inc_v', 'loan_status',
-                                  'purpose', 'addr_state', 'bc_util', 
-                                  'earliest_cr_line', 'revol_util'}
+        # Set the feature conversion dictionary
+        self.featureConvLookup = {'term': self.termConversion,
+                                  'int_rate': self.pcntRemove, 
+                                  'sub_grade': self.loanGradeHash, 
+                                  'emp_length': self.empLengthConversion,
+                                  'home_ownership': 
+                                  self.homeOwnershipEnumerator, 
+                                  'is_inc_v': self.incomeVerifiedConversion, 
+                                  'loan_status': self.statusConversion,
+                                  'purpose': self.purposeEnumerator, 
+                                  'addr_state': self.stateEnumerator, 
+                                  'bc_util': self.pcntRemove, 
+                                  'earliest_cr_line': 
+                                  self.earlyCrLineConversion, 
+                                  'revol_util': self.pcntRemove}
 
 
     def termConversion( self, training_sample ):
