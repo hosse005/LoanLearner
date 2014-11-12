@@ -124,8 +124,9 @@ def main():
            mLearningAgent.crossValidate() )
 
     # Print out the classifier coefficients
-    print('Classifier coefficients:')
-    print(mLearningAgent.getClfCoeffs())
+    if m_cls == 'logistic':
+        print('Classifier coefficients:')
+        print(mLearningAgent.getClfCoeffs())
 
     # Generate end time stamp and report processing time
     t1 = time.time()
