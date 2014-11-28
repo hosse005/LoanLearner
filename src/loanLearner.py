@@ -18,6 +18,9 @@ appVersion = '0.0.2'
 # Default input source must be relative to this main entry script
 defaultInput = '../res/LendingClubFeatureExtractorTest.csv'
 
+# File with input samples to predict outcome
+predictInput = '../tmp/predictInputSamples.csv'
+
 # Application entry and dependency injection
 def main():
 	
@@ -66,6 +69,13 @@ def main():
     parser.add_argument( '--filter', dest='filterPath', 
                          help='Feature Filter resource file', 
                          required=False , default='../res/FeatureFilter.csv' )
+
+    # Option to predict output of some input sample(s)
+    parser.add_argument( '-p', '--predict', dest='predict',
+                         help="Predict output of samples located at \
+                         ${ROOT}//tmp//predictInputSamples.csv \
+                         (must first train a classifier!!)", required=False, 
+                         action='store_true')
     
     # Grab the inputs passed
     args = parser.parse_args()
@@ -79,60 +89,89 @@ def main():
     else:
         m_dumpFile = None
     m_filter = args.filterPath
+    m_predict = args.predict
 
     # Generate time stamp for performance monitoring
     t0 = time.time()
 
-    # Construct the InputReader w/ our input file
-    mInputReader = InputReader( m_inputFile )
+    # Branch on predict flag
+    if m_predict is False:
+        # Construct the InputReader w/ our input file
+        mInputReader = InputReader( m_inputFile )
 
-    # Next, construct our LendingClubFeatureExtractor object
-    mFeatureExtractor = LendingClubFeatureExtractor( mInputReader, m_filter )
+        # Next, construct our LendingClubFeatureExtractor object
+        mFeatureExtractor = LendingClubFeatureExtractor( mInputReader, 
+                                                         m_filter )
 
-    # Use the FeatureExtractor to convert the data for learning
-    mFeatureExtractor.extractFeatures()
-    mFeatureExtractor.applyFeatureFilter()
+        # Use the FeatureExtractor to convert the data for learning
+        mFeatureExtractor.extractFeatures()
+        mFeatureExtractor.applyFeatureFilter()
 
-    # Dump pre-trained data if specified by user
-    if m_dumpFile is not None:
-        mFeatureExtractor.setOutCSVPath( m_dumpFile )
-        mFeatureExtractor.writeFeaturesToCSV()
+        # Dump pre-trained data if specified by user
+        if m_dumpFile is not None:
+            mFeatureExtractor.setOutCSVPath( m_dumpFile )
+            mFeatureExtractor.writeFeaturesToCSV()
 
-    # Construct a LearningAgent based on user input
-    if m_cls == 'SVM':
-        mLearningAgent = SVMClassifier( mFeatureExtractor, m_kernel )
-    elif m_cls == 'logistic':
-        mLearningAgent = LogisticClassifier( mFeatureExtractor )
+        # Construct a LearningAgent based on user input
+        if m_cls == 'SVM':
+            mLearningAgent = SVMClassifier( mFeatureExtractor, m_kernel )
+        elif m_cls == 'logistic':
+            mLearningAgent = LogisticClassifier( mFeatureExtractor )
+        else:
+            print( 'Invalid classifier passed.  See --help for valid options' )
+            return
+
+        # Set the test fraction of data to use for validation
+        mLearningAgent.setTstFraction( m_tstFrac )
+
+        # Set the learning regularization parameter
+        mLearningAgent.setRegularization( m_reg )
+
+        # Apply preprocessing to the training samples
+        mLearningAgent.shuffleSamples()
+        mLearningAgent.sampleSlice()
+        mLearningAgent.standardizeSamples()
+
+        # Train the classifier and report the accuracy against the test subset
+        mLearningAgent.trainModel()
+        print( 'Cross Validation accuracy on the test subset = %0.3f' % 
+               mLearningAgent.crossValidate() )
+
+        # Dump the classifier object to file
+        mLearningAgent.dumpClassifier()
+
+        # Print out the classifier coefficients
+        if m_cls == 'logistic':
+            print('Classifier coefficients:')
+            print(mLearningAgent.getClfCoeffs())
+
+        # Generate end time stamp and report processing time
+        t1 = time.time()
+        total = t1 - t0
+        print( 'Total processing time = %3.2f seconds' % total )
+
+    # Predict flag set, try read a stored classifier and push our inputs 
+    # through it
     else:
-        print( 'Invalid classifier passed.  See --help for valid options' )
-        return
+        print('Predictions for passed input samples (in same order):')
+        
+        # Construct an input reader
+        mInputReader = InputReader( predictInput )
 
-    # Set the test fraction of data to use for validation
-    mLearningAgent.setTstFraction( m_tstFrac )
+        # Next, construct our LendingClubFeatureExtractor object
+        mFeatureExtractor = LendingClubFeatureExtractor( mInputReader, 
+                                                         m_filter )
 
-    # Set the learning regularization parameter
-    mLearningAgent.setRegularization( m_reg )
+        # Use the FeatureExtractor to convert the data
+        mFeatureExtractor.extractFeatures()
 
-    # Apply preprocessing to the training samples
-    mLearningAgent.shuffleSamples()
-    mLearningAgent.sampleSlice()
-    mLearningAgent.standardizeSamples()
+        # Dump pre-trained data if specified by user
+        if m_dumpFile is not None:
+            mFeatureExtractor.setOutCSVPath( m_dumpFile )
+            mFeatureExtractor.writeFeaturesToCSV()
 
-    # Train the classifier and report the accuracy against the test subset
-    mLearningAgent.trainModel()
-    print( 'Cross Validation accuracy on the test subset = %0.3f' % 
-           mLearningAgent.crossValidate() )
-
-    # Print out the classifier coefficients
-    if m_cls == 'logistic':
-        print('Classifier coefficients:')
-        print(mLearningAgent.getClfCoeffs())
-
-    # Generate end time stamp and report processing time
-    t1 = time.time()
-    total = t1 - t0
-    print( 'Total processing time = %3.2f seconds' % total )
-
+        
+        
 if __name__ == '__main__':
     main()
 

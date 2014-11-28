@@ -28,6 +28,9 @@ class LearningAgent( metaclass=ABCMeta ):
         # Set the test fraction to default value
         self.tstFraction = 0.2
 
+        # Set the classifier dump path
+        self.clsPath = '../tmp/cls.pickle'
+
 
     def sampleSlice( self, fraction=None ):
         '''
@@ -99,6 +102,12 @@ class LearningAgent( metaclass=ABCMeta ):
     def getTrainingData( self ):
         '''Mechanism for retrieving training data'''
         return self.trainingData
+
+
+    @abstractmethod
+    def dumpClassifier( self ):
+        ''' This method is to be implemented by subclasses'''
+        pass
 
 
     @abstractmethod

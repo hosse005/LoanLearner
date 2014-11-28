@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import pickle
 import sys
 sys.path.append( '..' )
 from featureExtractor import FeatureExtractor
@@ -78,6 +79,11 @@ class LogisticClassifier( LearningAgent ):
         '''Return classifier learning weights'''
         return self.clf.coef_
 
+
+    def dumpClassifier ( self ):
+        ''' Method to serialize and dump the classifier class '''
+        with open( self.clsPath, 'wb' ) as f:
+            pickle.dump( self.clf, f )
 
     def __del__( self ):
         pass
