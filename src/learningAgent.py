@@ -29,7 +29,7 @@ class LearningAgent( metaclass=ABCMeta ):
         self.tstFraction = 0.2
 
         # Set the classifier dump path
-        self.clsPath = '../tmp/cls.pickle'
+        self.clfPath = '../tmp/clf.pickle'
 
 
     def sampleSlice( self, fraction=None ):

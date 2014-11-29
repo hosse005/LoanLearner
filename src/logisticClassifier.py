@@ -82,7 +82,7 @@ class LogisticClassifier( LearningAgent ):
 
     def dumpClassifier ( self ):
         ''' Method to serialize and dump the classifier class '''
-        with open( self.clsPath, 'wb' ) as f:
+        with open( self.clfPath, 'wb' ) as f:
             pickle.dump( self.clf, f )
 
     def __del__( self ):

@@ -3,6 +3,8 @@
 import sys
 import argparse
 import time
+import pickle
+import numpy as np
 from inputReader import InputReader
 from lendingClubFeatureExtractor import LendingClubFeatureExtractor
 from logisticClassifier import LogisticClassifier
@@ -20,6 +22,9 @@ defaultInput = '../res/LendingClubFeatureExtractorTest.csv'
 
 # File with input samples to predict outcome
 predictInput = '../tmp/predictInputSamples.csv'
+
+# Classifier dump location - MUST BE SAME AS the learningAgent's reference
+clsDumpLoc = '../tmp/clf.pickle'
 
 # Application entry and dependency injection
 def main():
@@ -164,13 +169,30 @@ def main():
 
         # Use the FeatureExtractor to convert the data
         mFeatureExtractor.extractFeatures()
+        mFeatureExtractor.applyFeatureFilter()
 
         # Dump pre-trained data if specified by user
         if m_dumpFile is not None:
             mFeatureExtractor.setOutCSVPath( m_dumpFile )
             mFeatureExtractor.writeFeaturesToCSV()
 
-        
+        # Try to read in the stored classifier
+        try:
+            with open(clsDumpLoc, 'rb') as f:
+                clf = pickle.load(f)
+        except FileNotFoundError:
+            print('Error! No classifier binary file found.')
+            print('Did you train a classifier yet??')
+            return
+            
+        # Get the output idx and remove the appropriate column from the input
+        outputIdx = mFeatureExtractor.listIdx( 'loan_status' )
+        data = mFeatureExtractor.getTrainingData()
+        data = np.delete( data, outputIdx, 1 )
+
+        # Loop through all of the inputs and make a prediction
+        for sample in data:
+            print(clf.predict(sample))
         
 if __name__ == '__main__':
     main()
