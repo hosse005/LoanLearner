@@ -225,10 +225,16 @@ class LendingClubFeatureExtractor( FeatureExtractor ):
         earlyCrLine = datetime.strptime( training_sample[idx],
                                          "%m/%d/%Y  %H:%M" )
 
-        # Convert datetime object to float seconds since epoch
-        earlyCrLine -= datetime(1970, 1, 1)
+        # Return number of years since earliest line of credit
+        return datetime.today().year - earlyCrLine.year
+        
+        #print(earlyCrLine.year)
+        #print(datetime.today().year - earlyCrLine.year)
 
-        return earlyCrLine.total_seconds()
+        # Convert datetime object to float seconds since epoch
+        #earlyCrLine -= datetime(1970, 1, 1)
+
+        #return earlyCrLine.total_seconds()
 
 
     def statusConversion( self, training_sample ):

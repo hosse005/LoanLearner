@@ -198,9 +198,11 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
         # Grab appropriate column index
         idx = self.mFeatureExtractor.listIdx( 'earliest_cr_line' )
 
-        # Generate a test date - testDelta time elapsed since epoch
+        # Generate a test date
         testDate = ['01/01/1972  01:50']
-        testDelta = 63078600.0
+
+        # Time elapsed since 2014
+        delta = 42
 
         # Push null entries into testDate to simulate feature placement in 
         # the training set
@@ -208,7 +210,7 @@ class LendingClubFeatureExtractorTest( unittest.TestCase ):
             testDate.insert(0,'')
         
         # Assert time elapsed since epoch is correct for given test time
-        self.assertEqual( testDelta, self.mFeatureExtractor.
+        self.assertEqual( delta, self.mFeatureExtractor.
                           earlyCrLineConversion( testDate ) )
 
     def test_statusConversion( self ):
