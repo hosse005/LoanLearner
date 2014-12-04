@@ -3,8 +3,8 @@
 import sys
 import argparse
 import time
-import pickle
 import numpy as np
+from sklearn.externals import joblib
 from inputReader import InputReader
 from lendingClubFeatureExtractor import LendingClubFeatureExtractor
 from logisticClassifier import LogisticClassifier
@@ -24,7 +24,7 @@ defaultInput = '../res/LendingClubFeatureExtractorTest.csv'
 predictInput = '../tmp/predictInputSamples.csv'
 
 # Classifier dump location - MUST BE SAME AS the learningAgent's reference
-clsDumpLoc = '../tmp/clf.pickle'
+clfDumpLoc = '../tmp/clf.pickle'
 
 # Application entry and dependency injection
 def main():
@@ -158,8 +158,6 @@ def main():
     # Predict flag set, try read a stored classifier and push our inputs 
     # through it
     else:
-        print('Predictions for passed input samples (in same order):')
-        
         # Construct an input reader
         mInputReader = InputReader( predictInput )
 
@@ -178,8 +176,9 @@ def main():
 
         # Try to read in the stored classifier
         try:
-            with open(clsDumpLoc, 'rb') as f:
-                clf = pickle.load(f)
+            #with open(clfDumpLoc, 'rb') as f:
+            #    clf = pickle.loads(f)
+            clf = joblib.load( clfDumpLoc )
         except FileNotFoundError:
             print('Error! No classifier binary file found.')
             print('Did you train a classifier yet??')
@@ -192,7 +191,14 @@ def main():
 
         # Loop through all of the inputs and make a prediction
         for sample in data:
+            print(sample)
             print(clf.predict(sample))
+            print(clf.predict_proba(sample))
+            print()
+
+        print(clf)
+        print()
+
         
 if __name__ == '__main__':
     main()

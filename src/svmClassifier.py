@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
-import pickle
 import sys
 sys.path.append( '..' )
 from featureExtractor import FeatureExtractor
 from learningAgent import LearningAgent
 from sklearn import svm
+from sklearn.externals import joblib
 import numpy as np
 
 class SVMClassifier( LearningAgent ):
@@ -100,8 +100,7 @@ class SVMClassifier( LearningAgent ):
 
     def dumpClassifier ( self ):
         ''' Method to serialize and dump the classifier class '''
-        with open( self.clfPath, 'wb' ) as f:
-            pickle.dump( self.clf, f )
+        joblib.dump( self.clf, self.clfPath )
 
         
     def __del__( self ):
