@@ -3,6 +3,7 @@
 from abc import ABCMeta, abstractmethod
 from sklearn import preprocessing
 import numpy as np
+import pickle
 
 class LearningAgent( metaclass=ABCMeta ):
     ''' 
@@ -30,6 +31,9 @@ class LearningAgent( metaclass=ABCMeta ):
 
         # Set the classifier dump path
         self.clfPath = '../tmp/clf.pickle'
+
+        # Set the scaler dump path
+        self.scalerPath = '../tmp/scaler.pickle'
 
 
     def sampleSlice( self, fraction=None ):
@@ -65,7 +69,10 @@ class LearningAgent( metaclass=ABCMeta ):
         self.scaler = preprocessing.StandardScaler().fit( self.X_train )
         self.X_train = self.scaler.transform( self.X_train )
         self.X_test = self.scaler.transform( self.X_test )
-        
+      
+        # Dump the scaler for use by sample predictions
+        with open( self.scalerPath, 'wb' ) as f:
+            pickle.dump( self.scaler, f )
 
     def shuffleSamples( self , seed=None ):
         '''

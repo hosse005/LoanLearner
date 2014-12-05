@@ -1,0 +1,11 @@
+loan_amnt,funded_amnt,term,int_rate,installment,sub_grade,emp_length,home_ownership,annual_inc,is_inc_v,loan_status,purpose,addr_state,dti,delinq_2yrs,earliest_cr_line,inq_last_6mths,open_acc,pub_rec,revol_bal,revol_util,total_acc,pub_rec_bankruptcies,chargeoff_within_12_mths,tax_liens
+100,100, 60 months,1.69%,34,A1,10+ years,OWN,1500000,Verified,Fully Paid,small_business,CA,16.6,1,2/19/1968 09:22,0,8,0,66958,69.70%,36,0,0,0
+6000,5250, 36 months,11.28%,172.58,C1,6 years,RENT,47628,Not Verified,Charged Off,other,NJ,5.24,0,2/10/1993 02:10,0,3,0,13673,58.40%,11,0,0,0
+10000,10000, 36 months,16.02%,351.67,D5,3 years,RENT,68000,Not Verified,Fully Paid,debt_consolidation,NC,6.49,0,4/5/1998 06:12,1,9,0,8257,86.90%,24,0,0,0
+15000,15000, 36 months,14.62%,517.2,D5,10+ years,MORTGAGE,108000,Not Verified,Charged Off,small_business,CA,11.56,1,1/30/1996 10:31,1,14,0,13706,45.70%,23,0,0,0
+4000,4000, 36 months,5.79%,121.31,A2,1 year,RENT,21000,Verified,Fully Paid,major_purchase,TX,6.17,0,8/22/2003 10:03,1,7,0,73,0.70%,24,0,0,0
+12000,12000, 36 months,16.29%,423.61,C4,10+ years,RENT,63000,Not Verified,Charged Off,debt_consolidation,FL,9.24,1,7/31/1975 04:40,2,23,0,5065,28%,61,0,0,0
+10000,10000, 36 months,7.29%,310.1,A4,5 years,RENT,99000,Not Verified,Fully Paid,wedding,NY,2.25,0,1/4/1984 09:19,0,4,0,1540,45.30%,11,0,0,0
+2600,2600, 36 months,19.72%,96.26,D5,8 years,RENT,33000,Not Verified,Charged Off,other,CA,25.89,0,6/28/2004 04:36,0,6,0,5816,72.70%,10,0,0,0
+3000,3000, 36 months,7.66%,93.54,A5,10+ years,RENT,53196,Not Verified,Fully Paid,car,CA,16.6,0,1/24/1986 11:58,1,6,0,12833,89.70%,21,0,0,0
+15000,15000, 36 months,18.75%,547.95,D3,10+ years,RENT,55000,Verified,Charged Off,credit_card,FL,14.44,0,6/15/2001 08:48,5,10,0,12043,38.20%,33,0,0,0

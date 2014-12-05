@@ -3,6 +3,7 @@
 import sys
 import argparse
 import time
+import pickle
 import numpy as np
 from sklearn.externals import joblib
 from sklearn import preprocessing
@@ -26,6 +27,9 @@ predictInput = '../tmp/predictInputSamples.csv'
 
 # Classifier dump location - MUST BE SAME AS the learningAgent's reference
 clfDumpLoc = '../tmp/clf.pickle'
+
+# Scaler dump location - MUST BE SAME AS the learningAgent's reference
+scalerDumpLoc = '../tmp/scaler.pickle'
 
 # Application entry and dependency injection
 def main():
@@ -179,8 +183,8 @@ def main():
         try:
             clf = joblib.load( clfDumpLoc )
         except FileNotFoundError:
-            print('Error! No classifier binary file found.')
-            print('Did you train a classifier yet??')
+            print( 'Error! No classifier binary file found.' )
+            print( 'Did you train a classifier yet??' )
             return
             
         # Get the output idx and remove the appropriate column from the input
@@ -190,18 +194,27 @@ def main():
 
         # Standarize data to zero mean and unit variance - this should ideally
         # be same as classifier's scaling factor
-        scaler = preprocessing.StandardScaler().fit( data )
+        with open( scalerDumpLoc, 'rb' ) as f:
+            scaler = pickle.load(f)
+
         data = scaler.transform( data )
 
-
         # Loop through all of the inputs and make a prediction
+        print()
         for sample in data:
-            print(sample)
-            print(clf.predict(sample))
-            print(clf.predict_proba(sample))
+            if clf.predict( sample ) == 0:
+                prediction = 'Charged Off'
+                result = 0
+            else:
+                prediction = 'Fully Paid'
+                result = 1
+
+            print( 'Predicted outcome of loan: %s' % prediction )
+            print( 'Certainty in outcome is: %.1f percent' % 
+                   ( clf.predict_proba(sample)[0][result] * 100 ) )
             print()
 
-        print(clf)
+        print( clf )
         print()
 
         
