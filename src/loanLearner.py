@@ -5,6 +5,7 @@ import argparse
 import time
 import numpy as np
 from sklearn.externals import joblib
+from sklearn import preprocessing
 from inputReader import InputReader
 from lendingClubFeatureExtractor import LendingClubFeatureExtractor
 from logisticClassifier import LogisticClassifier
@@ -176,8 +177,6 @@ def main():
 
         # Try to read in the stored classifier
         try:
-            #with open(clfDumpLoc, 'rb') as f:
-            #    clf = pickle.loads(f)
             clf = joblib.load( clfDumpLoc )
         except FileNotFoundError:
             print('Error! No classifier binary file found.')
@@ -188,6 +187,12 @@ def main():
         outputIdx = mFeatureExtractor.listIdx( 'loan_status' )
         data = mFeatureExtractor.getTrainingData()
         data = np.delete( data, outputIdx, 1 )
+
+        # Standarize data to zero mean and unit variance - this should ideally
+        # be same as classifier's scaling factor
+        scaler = preprocessing.StandardScaler().fit( data )
+        data = scaler.transform( data )
+
 
         # Loop through all of the inputs and make a prediction
         for sample in data:
