@@ -82,8 +82,9 @@ def main():
 
     # Option to predict output of some input sample(s)
     parser.add_argument( '-p', '--predict', dest='predict',
-                         help="Predict output of samples located at \
-                         ${ROOT}//tmp//predictInputSamples.csv \
+                         help="Run application in prediction mode. \
+                         Prediction input samples must be located at \
+                         ${PROJ_DIR}/tmp/predictInputSamples.csv \
                          (must first train a classifier!!)", required=False, 
                          action='store_true')
     
