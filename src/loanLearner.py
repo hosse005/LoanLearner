@@ -11,13 +11,15 @@ from inputReader import InputReader
 from lendingClubFeatureExtractor import LendingClubFeatureExtractor
 from logisticClassifier import LogisticClassifier
 from svmClassifier import SVMClassifier
+from dTreeClassifier import DecisionTreeClassifier
 
 # Application version
 ''' Revision History
 0.0.1 = First working implemenation - logistic regression
 0.0.2 = Added first SVM learner
+0.0.3 = Added a decision tree classifier
 '''
-appVersion = '0.0.2'
+appVersion = '0.0.3'
 
 # Default input source must be relative to this main entry script
 defaultInput = '../res/LendingClubFeatureExtractorTest.csv'
@@ -40,7 +42,8 @@ def main():
     whether a given applicant is likely or not to repay a given loan.' )
 
     # Application version readback option
-    parser.add_argument( '--version', action='version', version=appVersion )
+    parser.add_argument( '-v', '--version', action='version', 
+                         version=appVersion )
 
     # Option to pass in an input file to be processed
     parser.add_argument( '-i', '--input', dest='inputFile',
@@ -51,7 +54,7 @@ def main():
     parser.add_argument( '--classifier', dest='cls',
                          help="Machine Learning classifier type. \n \
                          Current possible options are: \n \
-                         'logistic'(default), 'SVM' ", 
+                         'logistic'(default), 'SVM', 'dTree'", 
                          required=False, default='logistic' )
 
     # Option to specify the SVM kernel to be used
@@ -128,6 +131,8 @@ def main():
             mLearningAgent = SVMClassifier( mFeatureExtractor, m_kernel )
         elif m_cls == 'logistic':
             mLearningAgent = LogisticClassifier( mFeatureExtractor )
+        elif m_cls == 'dTree':
+            mLearningAgent = DecisionTreeClassifier( mFeatureExtractor )
         else:
             print( 'Invalid classifier passed.  See --help for valid options' )
             return
@@ -152,7 +157,7 @@ def main():
         mLearningAgent.dumpClassifier()
 
         # Print out the classifier coefficients
-        if m_cls == 'logistic':
+        if m_cls == 'logistic' or m_cls == 'dTree':
             print('Classifier coefficients:')
             print(mLearningAgent.getClfCoeffs())
 

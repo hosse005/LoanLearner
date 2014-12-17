@@ -118,6 +118,12 @@ class LearningAgent( metaclass=ABCMeta ):
 
 
     @abstractmethod
+    def setRegularization( self, reg ):
+        ''' This method is to be implemented by subclasses'''
+        pass
+
+
+    @abstractmethod
     def trainModel( self ):
         ''' This method is to be implemented by subclasses'''
         pass
